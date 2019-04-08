@@ -5,7 +5,8 @@ defmodule RenaissanceWeb.PageControllerTest do
     conn = get(conn, "/")
     assert html_response(conn, 200) =~ "Hello World!"
   end
-    @tag :skip
+
+  @tag :skip
   test "GET /register", %{conn: conn} do
     conn = get(conn, "/register")
     assert html_response(conn, 200) =~ "register"

@@ -5,6 +5,7 @@ defmodule Renaissance.User do
   schema "users" do
     field :email, :string, unique: true
     field :password, :string, virtual: true
+    field :password_hash, :string
 
     timestamps(type: :utc_datetime)
   end
@@ -15,6 +16,17 @@ defmodule Renaissance.User do
     |> cast(attrs, [:email, :password])
     |> validate_required([:email, :password])
     |> unique_constraint(:email)
+    |> hash_password()
   end
 
+  defp hash_password(attrs) do
+    password = get_change(attrs, :password)
+    case password do
+      nil ->
+        attrs
+      _ ->
+        hash = Bcrypt.hash_pwd_salt(password)
+        attrs |> put_change(:password_hash, hash)
+      end
+  end
 end
