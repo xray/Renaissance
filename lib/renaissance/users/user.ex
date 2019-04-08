@@ -3,10 +3,10 @@ defmodule Renaissance.User do
   import Ecto.Changeset
 
   schema "users" do
-    field :email, :string
-    field :password, :string
+    field :email, :string, unique: true
+    field :password, :string, virtual: true
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @doc false
@@ -14,5 +14,7 @@ defmodule Renaissance.User do
     user
     |> cast(attrs, [:email, :password])
     |> validate_required([:email, :password])
+    |> unique_constraint(:email)
   end
+
 end
