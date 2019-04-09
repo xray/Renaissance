@@ -17,6 +17,8 @@ defmodule RenaissanceWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/register", RegisterController, :index
+    post "/register", RegisterController, :new
   end
 
   # Other scopes may use custom stacks.
