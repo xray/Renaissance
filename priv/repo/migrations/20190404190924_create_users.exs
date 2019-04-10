@@ -4,10 +4,11 @@ defmodule Renaissance.Repo.Migrations.CreateUsers do
   def change do
     create table(:users) do
       add :email, :string
-      add :password, :string
+      add :password_hash, :string
 
-      timestamps()
+      timestamps(type: :utc_datetime)
     end
 
+    create unique_index(:users, [:email])
   end
 end

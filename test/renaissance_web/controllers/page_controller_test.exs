@@ -3,6 +3,6 @@ defmodule RenaissanceWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, "/")
-    assert html_response(conn, 200) =~ "Hello World!"
+    assert html_response(conn, 200) =~ "Renaissance"
   end
 end

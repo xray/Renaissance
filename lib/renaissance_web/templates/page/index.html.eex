@@ -1,1 +1,2 @@
-<h1>Hello World!</h1>
+<h1>Renaissance</h1>
+<a href="<%= Routes.register_path(@conn, :register) %>">Register</a>
