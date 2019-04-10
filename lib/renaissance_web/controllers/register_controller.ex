@@ -1,20 +1,22 @@
 defmodule RenaissanceWeb.RegisterController do
   use RenaissanceWeb, :controller
-  alias RenaissanceWeb.{ErrorHelpers}
   alias Renaissance.{Users}
 
-  def index(conn, _params) do
-    render(conn, "register.html", token: get_csrf_token(), error: false)
+  def new(conn, _params) do
+    render(conn, "register.html", changeset: conn)
   end
 
-  def new(conn, params) do
-    register_params = %{email: params["email"], password: params["password"]}
-
-    case Users.register_user(register_params) do
+  def register(conn, params) do
+    case Users.register_user(params) do
       {:ok, _user} ->
-        render(conn, "registered.html")
-      {:error, changeset} ->
-        render(conn, "register.html", token: get_csrf_token(), error: true)
+        conn
+        |> put_flash(:info, "You have successfully signed up!")
+        |> redirect(to: Routes.register_path(conn, :register))
+
+      {:error, _changeset} ->
+        conn
+        |> put_flash(:error, "An error occurred!")
+        |> redirect(to: Routes.register_path(conn, :new))
     end
   end
 end

@@ -11,7 +11,7 @@ defmodule Renaissance.User do
   end
 
   @doc false
-  def changeset(user, attrs) do
+  def changeset(user, attrs \\ %{}) do
     user
     |> cast(attrs, [:email, :password])
     |> validate_required([:email, :password])
@@ -21,12 +21,14 @@ defmodule Renaissance.User do
 
   defp hash_password(attrs) do
     password = get_change(attrs, :password)
+
     case password do
       nil ->
         attrs
+
       _ ->
         hash = Bcrypt.hash_pwd_salt(password)
         attrs |> put_change(:password_hash, hash)
-      end
+    end
   end
 end

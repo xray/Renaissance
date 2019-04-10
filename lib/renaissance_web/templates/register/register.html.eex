@@ -1,15 +1,12 @@
 <h1>Register</h1>
 <hr>
-<form action="/register" method="post">
-    <%= if @error do %>
-        <h2>An error occured...<h2>
-    <% end %>
-    <input type="hidden" value="<%= @token %>" name="_csrf_token" />
-    Email:<br>
-    <input type="email" name="email" placeholder="E-Mail" required>
-    <br>
-    Password:<br>
-    <input type="password" name="password" required>
-    <br><br>
-    <input type="submit" value="Submit">
-</form>
+<%= form_for @changeset, Routes.register_path(@conn, :register), fn f -> %>
+    <label>
+        Email:    <%= email_input f, :email, placeholder: "Email address", required: true%>
+    </label>
+    <label>
+        Password: <%= password_input f, :password, placeholder: "Password", required: true %>
+    </label>
+    
+    <%= submit "Submit" %>
+<% end %>

@@ -3,7 +3,6 @@ defmodule Renaissance.Test.UsersTest do
   alias Renaissance.{Users, User, Repo}
 
   describe "users" do
-
     test "stores a valid user record in db" do
       email = "mail@mail.com"
       password = "password"
@@ -24,6 +23,5 @@ defmodule Renaissance.Test.UsersTest do
       count = Repo.aggregate(Ecto.Query.from(p in "users"), :count, :id)
       assert 0 == count
     end
-
   end
 end
