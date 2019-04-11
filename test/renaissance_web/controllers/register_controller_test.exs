@@ -7,12 +7,12 @@ defmodule RenaissanceWeb.RegisterControllerTest do
   end
 
   test "POST /register with valid email and password" do
-    conn = post(build_conn(), "/register", email: "mail@mail.com", password: "password")
+    conn = post(build_conn(), "/register", %{"user" => %{email: "mail@mail.com", password: "password"}})
     assert get_flash(conn, :info) == "You have successfully signed up!"
   end
 
   test "POST /register with no email or password" do
-    conn = post(build_conn(), "/register", email: "", password: "")
-    assert get_flash(conn, :error) == "An error occurred!"
+    conn = post(build_conn(), "/register", %{"user" => %{email: "", password: ""}})
+    assert html_response(conn, 200) =~ "can&#39;t be blank"
   end
 end
