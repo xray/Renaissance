@@ -1,10 +1,18 @@
 defmodule RenaissanceWeb.RegisterController do
   use RenaissanceWeb, :controller
   alias Renaissance.{User, Users}
+  alias RenaissanceWeb.Helpers.{Auth}
 
   def new(conn, _params) do
     changeset = User.changeset(%User{})
-    render(conn, "register.html", changeset: changeset)
+    case Auth.signed_in?(conn) do
+      true ->
+        conn
+        |> put_flash(:error, "You're already logged in...")
+        |> redirect(to: Routes.page_path(conn, :index))
+      nil ->
+        render(conn, "register.html", changeset: changeset)
+    end
   end
 
   def register(conn, params) do
@@ -12,7 +20,7 @@ defmodule RenaissanceWeb.RegisterController do
       {:ok, _user} ->
         conn
         |> put_flash(:info, "You have successfully signed up!")
-        |> redirect(to: Routes.register_path(conn, :register))
+        |> redirect(to: Routes.login_path(conn, :login))
 
       {:error, changeset} ->
         render(conn, "register.html", changeset: changeset)
