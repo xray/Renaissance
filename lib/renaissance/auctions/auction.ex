@@ -13,8 +13,8 @@ defmodule Renaissance.Auction do
   end
 
   @doc false
-  def changeset(user, attrs \\ %{}) do
-    user
+  def changeset(auction, attrs \\ %{}) do
+    auction
     |> cast(attrs, [:title, :description, :user_id, :price, :end_date])
     |> validate_required([:title, :description, :user_id, :price, :end_date])
     |> validate_price()
@@ -41,12 +41,10 @@ defmodule Renaissance.Auction do
   defp validate_date(changeset) do
     auction_complete = get_change(changeset, :end_date)
 
-    case DateTime.compare(DateTime.utc_now(), auction_complete || DateTime.utc_now()) == :lt do
-      true ->
-        changeset
-
-      false ->
-        add_error(changeset, :end_date, "End date needs to be in the future.")
+    if DateTime.compare(DateTime.utc_now(), auction_complete || DateTime.utc_now()) == :lt do
+      changeset
+    else
+      add_error(changeset, :end_date, "End date needs to be in the future.")
     end
   end
 end

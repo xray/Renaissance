@@ -12,12 +12,12 @@ defmodule Renaissance.Test.AuctionsTest do
     }
   }
 
+  @user %{email: "test@suite.com", password: "password"}
+
   describe "auctions" do
     test "stores a valid auction in the db" do
-      user_email = "test@suite.com"
-      Users.register_user(%{email: user_email, password: "password"})
-
-      Auctions.create_auction(user_email, @valid_attrs)
+      Users.register_user(@user)
+      Auctions.create_auction(@user.email, @valid_attrs)
 
       auction = Repo.get_by(Auction, title: "Test Title")
       assert auction.title == @valid_attrs["auction"]["title"]

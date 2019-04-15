@@ -1,5 +1,5 @@
 defmodule Renaissance.Auctions do
-  alias Renaissance.{Auction, Repo, User}
+  alias Renaissance.{Auction, Repo, User, Users}
 
   def create_auction(email, params) do
     auction =
@@ -33,16 +33,16 @@ defmodule Renaissance.Auctions do
       |> String.replace(".", "")
       |> Integer.parse()
       |> elem(0)
-      |> Money.new(:USD)
+      |> Money.new()
 
     params
     |> Map.replace!("price", price)
   end
 
   defp add_user_id(params, email) do
-    user_id = Repo.get_by(User, email: email).id
+    user_id_value = Users.get_by_email(email).id
 
     params
-    |> Map.put("user_id", user_id)
+    |> Map.put("user_id", user_id_value)
   end
 end

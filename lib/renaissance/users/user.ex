@@ -20,15 +20,11 @@ defmodule Renaissance.User do
   end
 
   defp hash_password(attrs) do
-    password = get_change(attrs, :password)
-
-    case password do
-      nil ->
-        attrs
-
-      _ ->
-        hash = Bcrypt.hash_pwd_salt(password)
-        attrs |> put_change(:password_hash, hash)
+    if is_nil(password = get_change(attrs, :password)) do
+      attrs
+    else
+      hash = Bcrypt.hash_pwd_salt(password)
+      attrs |> put_change(:password_hash, hash)
     end
   end
 end
