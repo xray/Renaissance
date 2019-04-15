@@ -2,13 +2,15 @@ defmodule Renaissance.Test.AuctionsTest do
   use Renaissance.DataCase
   alias Renaissance.{Auctions, Auction, Users, Repo}
 
-  @valid_attrs %{"auction" => %{
-    "title" => "Test Title",
-    "description" => "Test description.",
-    "end_date_day" => "3019-04-15",
-    "end_date_time" => "14:03",
-    "price" => "10.00"
-  }}
+  @valid_attrs %{
+    "auction" => %{
+      "title" => "Test Title",
+      "description" => "Test description.",
+      "end_date_day" => "3019-04-15",
+      "end_date_time" => "14:03",
+      "price" => "10.00"
+    }
+  }
 
   describe "auctions" do
     test "stores a valid auction in the db" do
@@ -24,13 +26,16 @@ defmodule Renaissance.Test.AuctionsTest do
     end
 
     test "does not store an invalid changeset" do
-      changeset = %{"auction" => %{
-        "title" => "",
-        "description" => "Test description.",
-        "end_date_day" => "3019-04-15",
-        "end_date_time" => "14:03",
-        "price" => "10.00"
-      }}
+      changeset = %{
+        "auction" => %{
+          "title" => "",
+          "description" => "Test description.",
+          "end_date_day" => "3019-04-15",
+          "end_date_time" => "14:03",
+          "price" => "10.00"
+        }
+      }
+
       user_email = "test@suite.com"
       Users.register_user(%{email: user_email, password: "password"})
 
