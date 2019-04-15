@@ -21,6 +21,8 @@ defmodule RenaissanceWeb.Router do
     post "/register", RegisterController, :register
     get "/login", LoginController, :login
     post "/login", LoginController, :verify
+    get "/auctions/new", AuctionController, :new
+    post "/auctions/new", AuctionController, :create
   end
 
   # Other scopes may use custom stacks.

@@ -2,10 +2,7 @@
   <div class="pageGroup">
     <h1 class="renaissance-main lbl-group">Renaissance</h1>
     <div class="content-text">
-        <a href="<%= Routes.register_path(@conn, :register) %>">Create a new account</a>
-    </div>
-    <div class="content-text">
-        <a href="<%= Routes.login_path(@conn, :login) %>">Login</a>
+        <a href="<%= Routes.auction_path(@conn, :new) %>">Start an Auction</a>
     </div>
   </div>
 </div>

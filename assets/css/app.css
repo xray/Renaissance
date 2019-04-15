@@ -66,10 +66,37 @@ body {
 }
 
 .form-section {
+    display: flex;
+    flex-direction: column;
     margin: 0 2rem 0 2rem;
 }
 
-.form-text {
+.form-section-half {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+}
+
+.half-right {
+    margin: 0 0 0 1rem;
+}
+
+.half-left {
+
+    margin: 0 1rem 0 0;
+}
+
+.form-section-horizontal {
+    flex-direction: row;
+    display: flex;
+}
+
+.form-multi-input {
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+.form-text{
     font-size: 18px !important;
 }
 
@@ -90,6 +117,23 @@ body {
     font-weight: 200;
     font-size: 24px;
     margin: 0 2rem 2rem 2rem;
+}
+
+.date-form {
+    font-family: 'Roboto', sans-serif;
+    background-color: transparent;
+    border: 0.1rem solid #d1d1d1;
+    border-radius: .4rem;
+    box-shadow: none;
+    box-sizing: inherit;
+    height: 3.8rem;
+    padding: .6rem 1.0rem;
+    width: 50%;
+}
+
+.dollar-sign{
+    margin: .6rem .5rem 2rem 0;
+    font-family: 'Roboto', sans-serif;
 }
 
 @media only screen and (max-width: 60.0rem) {
