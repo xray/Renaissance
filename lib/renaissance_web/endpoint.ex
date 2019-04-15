@@ -38,9 +38,9 @@ defmodule RenaissanceWeb.Endpoint do
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.
   plug Plug.Session,
-    store: :ets,
-    key: "sid",
-    table: :session
+    store: :cookie,
+    key: "_renaissance_key",
+    signing_salt: "lY2uGBpX"
 
   plug RenaissanceWeb.Router
 end

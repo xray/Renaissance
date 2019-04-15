@@ -6,8 +6,6 @@ defmodule Renaissance.Application do
   use Application
 
   def start(_type, _args) do
-    import Supervisor.Spec, warn: false
-    :ets.new(:session, [:named_table, :public, read_concurrency: true])
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository
