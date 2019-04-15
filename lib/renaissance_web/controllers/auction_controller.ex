@@ -5,7 +5,6 @@ defmodule RenaissanceWeb.AuctionController do
 
   def new(conn, _params) do
     changeset = Auction.changeset(%Auction{})
-
     if Auth.signed_in?(conn) do
       render(conn, "new_auction.html", changeset: changeset)
     else
