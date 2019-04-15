@@ -3,15 +3,15 @@
 @import "./phoenix.css";
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,700,900');
 
-form{
+form {
     margin-bottom: 2rem;
 }
 
-body{
+body {
     margin: 0;
 }
 
-.alert{
+.alert {
     position: fixed;
     width: calc(100% - 2rem);
     margin: 1rem;
@@ -21,20 +21,20 @@ body{
     color: #fafafa;
 }
 
-.alert-info{
+.alert-info {
     background-color: #607D8B;
 }
 
-.alert-danger{
+.alert-danger {
     background-color: #ef5350;
 }
 
-.renaissance-main{
+.renaissance-main {
     font-size: 48px;
     text-transform: uppercase;
 }
 
-.pageContent{
+.pageContent {
     display: flex;
     flex-direction: column;
     width: 100vw;
@@ -46,7 +46,7 @@ body{
     background-size: cover;
 }
 
-.pageGroup{
+.pageGroup {
     display: flex;
     flex-direction: column;
     width: 40vw;
@@ -55,7 +55,7 @@ body{
     box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 }
 
-.lbl-group{
+.lbl-group {
     margin: 2rem;
     font-family: 'Roboto', sans-serif;
     font-weight: 600;
@@ -65,27 +65,27 @@ body{
     padding: 0 0 5px 0;
 }
 
-.form-section{
+.form-section {
     margin: 0 2rem 0 2rem;
 }
 
-.form-text{
+.form-text {
     font-size: 18px !important;
 }
 
-.lbl-form{
+.lbl-form {
     font-family: 'Roboto', sans-serif;
     font-weight: 200;
     color: #616161;
 }
 
-.help-block{
+.help-block {
     font-family: 'Roboto', sans-serif;
     font-weight: 200;
     color: #ef5350;
 }
 
-.content-text{
+.content-text {
     font-family: 'Roboto', sans-serif;
     font-weight: 200;
     font-size: 24px;

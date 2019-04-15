@@ -5,13 +5,12 @@ defmodule RenaissanceWeb.LoginController do
 
   def login(conn, _params) do
     changeset = User.changeset(%User{})
-    case Auth.signed_in?(conn) do
-      true ->
-        conn
-        |> put_flash(:error, "You're already logged in...")
-        |> redirect(to: Routes.page_path(conn, :index))
-      nil ->
-        render(conn, "login.html", changeset: changeset)
+    if Auth.signed_in?(conn) do
+      conn
+      |> put_flash(:error, "You're already logged in...")
+      |> redirect(to: Routes.page_path(conn, :index))
+    else
+      render(conn, "login.html", changeset: changeset)
     end
   end
 
