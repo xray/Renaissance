@@ -20,7 +20,9 @@ defmodule RenaissanceWeb.RegisterControllerTest do
 
   test "GET /register while logged in" do
     post(build_conn(), "/register", %{"user" => %{email: "mail@mail.com", password: "password"}})
-    post_login = post(build_conn(), "/login", %{"user" => %{email: "mail@mail.com", password: "password"}})
+
+    post_login =
+      post(build_conn(), "/login", %{"user" => %{email: "mail@mail.com", password: "password"}})
 
     conn = get(post_login, "/register")
 

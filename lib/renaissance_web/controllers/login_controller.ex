@@ -5,6 +5,7 @@ defmodule RenaissanceWeb.LoginController do
 
   def login(conn, _params) do
     changeset = User.changeset(%User{})
+
     if Auth.signed_in?(conn) do
       conn
       |> put_flash(:error, "You're already logged in...")

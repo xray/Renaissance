@@ -5,13 +5,13 @@ defmodule RenaissanceWeb.RegisterController do
 
   def new(conn, _params) do
     changeset = User.changeset(%User{})
-    case Auth.signed_in?(conn) do
-      true ->
-        conn
-        |> put_flash(:error, "You're already logged in...")
-        |> redirect(to: Routes.page_path(conn, :index))
-      nil ->
-        render(conn, "register.html", changeset: changeset)
+
+    if Auth.signed_in?(conn) do
+      conn
+      |> put_flash(:error, "You're already logged in...")
+      |> redirect(to: Routes.page_path(conn, :index))
+    else
+      render(conn, "register.html", changeset: changeset)
     end
   end
 

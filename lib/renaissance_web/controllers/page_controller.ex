@@ -6,7 +6,8 @@ defmodule RenaissanceWeb.PageController do
     case Auth.signed_in?(conn) do
       true ->
         render(conn, "index.html")
-      nil ->
+
+      false ->
         redirect(conn, to: Routes.login_path(conn, :login))
     end
   end
