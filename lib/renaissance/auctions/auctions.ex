@@ -1,5 +1,6 @@
 defmodule Renaissance.Auctions do
-  alias Renaissance.{Auction, Repo, Users}
+  import Ecto.Query
+  alias Renaissance.{Auction, Repo, User, Users}
 
   def create_auction(email, params) do
     auction =
@@ -13,6 +14,23 @@ defmodule Renaissance.Auctions do
 
   def get_by_title(title) do
     Repo.get_by(Auction, title: title)
+  end
+
+  def get_all_auctions() do
+    query =
+      from a in Auction,
+        join: u in User,
+        on: u.id == a.user_id,
+        select: {a.title, a.description, a.price, a.end_date, u.email}
+
+    for {title, description, price, end_date, seller} <- Repo.all(query),
+        do: %{
+          title: title,
+          description: description,
+          price: Money.to_string(price),
+          end_date: DateTime.to_string(end_date),
+          seller: seller
+        }
   end
 
   defp format_end_date(params) do

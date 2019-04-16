@@ -1,5 +1,6 @@
 defmodule Renaissance.User do
   use Ecto.Schema
+  alias Renaissance.{Auction}
   import Ecto.Changeset
 
   @required_fields ~w(email password)a
@@ -9,7 +10,7 @@ defmodule Renaissance.User do
     field :email, :string, unique: true
     field :password, :string, virtual: true
     field :password_hash, :string
-    has_many :auctions, Renaissance.Auction
+    has_many :auctions, Auction
 
     timestamps(type: :utc_datetime)
   end

@@ -27,8 +27,8 @@ config :phoenix, :json_library, Jason
 
 config :money,
   default_currency: :USD,
-  separator: ".",
-  delimeter: ",",
+  separator: ",",
+  delimeter: ".",
   symbol: true,
   symbol_on_right: false,
   symbol_space: false
