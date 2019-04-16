@@ -2,21 +2,24 @@ defmodule Renaissance.Auction do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @required_fields ~w(title description user_id price end_date)a
+  @optional_fields ~w()a
+
   schema "auctions" do
     field :title, :string
     field :description, :string
-    field :user_id, :integer
     field :price, Money.Ecto.Amount.Type
     field :end_date, :utc_datetime
+    belongs_to :user, User
 
     timestamps(type: :utc_datetime)
   end
 
   @doc false
-  def changeset(auction, attrs \\ %{}) do
-    auction
-    |> cast(attrs, [:title, :description, :user_id, :price, :end_date])
-    |> validate_required([:title, :description, :user_id, :price, :end_date])
+  def changeset(user, attrs \\ %{}) do
+    user
+    |> cast(attrs, @required_fields ++ @optional_fields)
+    |> validate_required(@required_fields)
     |> validate_price()
     |> validate_date()
   end
@@ -26,15 +29,10 @@ defmodule Renaissance.Auction do
     zero_dollars = Money.new(000, :USD)
     one_dollar = Money.new(100, :USD)
 
-    case Money.compare(item_price || one_dollar, zero_dollars) do
-      0 ->
-        add_error(changeset, :price, "Price needs to be greater than 0.")
-
-      -1 ->
-        add_error(changeset, :price, "Price needs to be greater than 0.")
-
-      1 ->
-        changeset
+    if Money.compare(item_price || one_dollar, zero_dollars) == 1 do
+      changeset
+    else
+      add_error(changeset, :price, "Price needs to be greater than 0.")
     end
   end
 

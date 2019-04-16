@@ -2,10 +2,14 @@ defmodule Renaissance.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @required_fields ~w(email password)a
+  @optional_fields ~w()a
+
   schema "users" do
     field :email, :string, unique: true
     field :password, :string, virtual: true
     field :password_hash, :string
+    has_many :auctions, Renaissance.Auction
 
     timestamps(type: :utc_datetime)
   end
@@ -13,8 +17,8 @@ defmodule Renaissance.User do
   @doc false
   def changeset(user, attrs \\ %{}) do
     user
-    |> cast(attrs, [:email, :password])
-    |> validate_required([:email, :password])
+    |> cast(attrs, @required_fields ++ @optional_fields)
+    |> validate_required(@required_fields)
     |> unique_constraint(:email)
     |> hash_password()
   end

@@ -1,7 +1,7 @@
 defmodule RenaissanceWeb.AuctionControllerTest do
   use RenaissanceWeb.ConnCase
 
-  @user %{email: "mail@mail.com", password: "password"}
+  @user_params %{email: "mail@mail.com", password: "password"}
 
   test "redirects to login when not logged in" do
     conn = get(build_conn(), "/auctions/new")
@@ -10,8 +10,8 @@ defmodule RenaissanceWeb.AuctionControllerTest do
 
   defp login do
     build_conn()
-    |> post("/register", %{"user" => @user})
-    |> post("/login", %{"user" => @user})
+    |> post("/register", %{"user" => @user_params})
+    |> post("/login", %{"user" => @user_params})
   end
 
   test "not redirected when logged in" do

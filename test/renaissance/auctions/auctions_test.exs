@@ -12,12 +12,12 @@ defmodule Renaissance.Test.AuctionsTest do
     }
   }
 
-  @user %{email: "test@suite.com", password: "password"}
+  @user_params %{email: "test@suite.com", password: "password"}
 
   describe "auctions" do
     test "stores a valid auction in the db" do
-      Users.register_user(@user)
-      Auctions.create_auction(@user.email, @valid_attrs)
+      Users.register_user(@user_params)
+      Auctions.create_auction(@user_params.email, @valid_attrs)
 
       auction = Repo.get_by(Auction, title: "Test Title")
       assert auction.title == @valid_attrs["auction"]["title"]
@@ -36,10 +36,9 @@ defmodule Renaissance.Test.AuctionsTest do
         }
       }
 
-      user_email = "test@suite.com"
-      Users.register_user(%{email: user_email, password: "password"})
+      Users.register_user(%{email: @user_params.email, password: "password"})
 
-      Auctions.create_auction(user_email, changeset)
+      Auctions.create_auction(@user_params.email, changeset)
 
       count = Repo.aggregate(Ecto.Query.from(p in "auctions"), :count, :id)
       assert 0 == count
