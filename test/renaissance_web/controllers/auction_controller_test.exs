@@ -106,30 +106,35 @@ defmodule RenaissanceWeb.AuctionControllerTest do
   end
 
   test "GET /auctions displays all auctions when signed in" do
-    conn = build_conn()
-    |> post("/register", %{"user" => %{email: "mail@mail.com", password: "password"}})
-    |> post("/login", %{"user" => %{email: "mail@mail.com", password: "password"}})
-    |> post("/auctions/new", %{"auction" => %{
-      title: "Test Title",
-      description: "Test description.",
-      end_date_day: "3019-04-15",
-      end_date_time: "14:03",
-      price: "10.00"
-      }})
-    |> post("/auctions/new", %{"auction" => %{
-      title: "Test Two Title",
-      description: "Test two description.",
-      end_date_day: "3019-04-15",
-      end_date_time: "14:03",
-      price: "15.00"
-      }})
-    |> get("/auctions")
+    conn =
+      build_conn()
+      |> post("/register", %{"user" => %{email: "mail@mail.com", password: "password"}})
+      |> post("/login", %{"user" => %{email: "mail@mail.com", password: "password"}})
+      |> post("/auctions/new", %{
+        "auction" => %{
+          title: "Test Title",
+          description: "Test description.",
+          end_date_day: "3019-04-15",
+          end_date_time: "14:03",
+          price: "10.00"
+        }
+      })
+      |> post("/auctions/new", %{
+        "auction" => %{
+          title: "Test Two Title",
+          description: "Test two description.",
+          end_date_day: "3019-04-15",
+          end_date_time: "14:03",
+          price: "15.00"
+        }
+      })
+      |> get("/auctions")
 
-      assert html_response(conn, 200) =~ "Test Title"
-      assert html_response(conn, 200) =~ "Test description."
-      assert html_response(conn, 200) =~ "$10.00"
-      assert html_response(conn, 200) =~ "Test Two Title"
-      assert html_response(conn, 200) =~ "Test two description."
-      assert html_response(conn, 200) =~ "$15.00"
+    assert html_response(conn, 200) =~ "Test Title"
+    assert html_response(conn, 200) =~ "Test description."
+    assert html_response(conn, 200) =~ "$10.00"
+    assert html_response(conn, 200) =~ "Test Two Title"
+    assert html_response(conn, 200) =~ "Test two description."
+    assert html_response(conn, 200) =~ "$15.00"
   end
 end

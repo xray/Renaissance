@@ -4,5 +4,8 @@
     <div class="content-text">
         <a href="<%= Routes.auction_path(@conn, :new) %>">Start an Auction</a>
     </div>
+    <div class="content-text">
+        <a href="<%= Routes.auction_path(@conn, :list) %>">View Auctions</a>
+    </div>
   </div>
 </div>
