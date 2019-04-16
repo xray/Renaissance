@@ -17,7 +17,7 @@
 
       <div class="form-section form-section-horizontal">
         <div class="form-section-half half-left">
-            <%= label f, "Price (USD)", class: "lbl-form" %>
+            <%= label f, "Price", class: "lbl-form" %>
             <div class="form-section-horizontal">
               <p class="dollar-sign">$</p>
               <%= number_input f, :price,  class: "txt-form", required: true, min: 1.00, step: 0.01, value: 1.00 %>
