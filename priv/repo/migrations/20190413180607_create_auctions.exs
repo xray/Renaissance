@@ -3,9 +3,9 @@ defmodule Renaissance.Repo.Migrations.CreateAuctions do
 
   def change do
     create table(:auctions) do
-      add :title, :string
+      add :title, :string, null: false
       add :description, :string
-      add :user_id, references(:users)
+      add :user_id, references(:users), null: false
       add :price, :integer
       add :end_date, :utc_datetime
 
