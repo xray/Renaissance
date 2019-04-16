@@ -1,7 +1,14 @@
 defmodule RenaissanceWeb.PageController do
   use RenaissanceWeb, :controller
+  alias RenaissanceWeb.Helpers.{Auth}
 
   def index(conn, _params) do
-    render(conn, "index.html")
+    case Auth.signed_in?(conn) do
+      true ->
+        render(conn, "index.html")
+
+      false ->
+        redirect(conn, to: Routes.login_path(conn, :login))
+    end
   end
 end

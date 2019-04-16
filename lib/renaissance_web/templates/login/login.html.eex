@@ -1,10 +1,10 @@
 <div class="pageContent">
   <div class="pageGroup">
-    <h1 class="lbl-group">Register</h1>
+    <h1 class="lbl-group">Login</h1>
     <div class="form-text content-text">
-      <a href="<%= Routes.login_path(@conn, :login) %>">Already have an account? Login Here.</a>
+        <a href="<%= Routes.register_path(@conn, :new) %>">Don't have an account? Register Here.</a>
     </div>
-    <%= form_for @changeset, Routes.register_path(@conn, :register), fn f -> %>
+    <%= form_for @changeset, Routes.login_path(@conn, :verify), fn f -> %>
       <div class="form-section">
         <%= label f, :email, class: "lbl-form" %>
         <%= email_input f, :email, class: "txt-form", placeholder: "Email", required: true %>
@@ -14,7 +14,7 @@
       <div class="form-section">
         <%= label f, :password, class: "lbl-form" %>
         <%= password_input f, :password,  class: "txt-form", placeholder: "Password", required: true %>
-        <%= error_tag f, :password %>
+        <%= error_tag f, :error %>
       </div>
   
       <div class="form-section">
