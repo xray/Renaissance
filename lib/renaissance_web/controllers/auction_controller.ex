@@ -30,4 +30,13 @@ defmodule RenaissanceWeb.AuctionController do
         render(conn, "new_auction.html", changeset: changeset)
     end
   end
+
+  def list(conn, _params) do
+    if Auth.signed_in?(conn) do
+      render(conn, "auction_list.html", auctions: Auctions.get_all_auctions())
+    else
+      conn
+      |> redirect(to: Routes.login_path(conn, :login))
+    end
+  end
 end

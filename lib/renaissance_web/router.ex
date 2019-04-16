@@ -21,6 +21,7 @@ defmodule RenaissanceWeb.Router do
     post "/register", RegisterController, :register
     get "/login", LoginController, :login
     post "/login", LoginController, :verify
+    get "/auctions", AuctionController, :list
     get "/auctions/new", AuctionController, :new
     post "/auctions/new", AuctionController, :create
   end

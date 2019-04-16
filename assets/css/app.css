@@ -1,7 +1,7 @@
 /* This file is for your main application css. */
 
 @import "./phoenix.css";
-@import url('https://fonts.googleapis.com/css?family=Roboto:400,700,900');
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i');
 
 form {
     margin-bottom: 2rem;
@@ -53,6 +53,8 @@ body {
     background-color: #fafafa;
     border-radius: 4px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    overflow: scroll;
+    max-height: calc(100vh - 4rem);
 }
 
 .lbl-group {
@@ -102,19 +104,19 @@ body {
 
 .lbl-form {
     font-family: 'Roboto', sans-serif;
-    font-weight: 200;
+    font-weight: 300;
     color: #616161;
 }
 
 .help-block {
     font-family: 'Roboto', sans-serif;
-    font-weight: 200;
+    font-weight: 600;
     color: #ef5350;
 }
 
 .content-text {
     font-family: 'Roboto', sans-serif;
-    font-weight: 200;
+    font-weight: 300;
     font-size: 24px;
     margin: 0 2rem 2rem 2rem;
 }
@@ -134,6 +136,50 @@ body {
 .dollar-sign{
     margin: .6rem .5rem 2rem 0;
     font-family: 'Roboto', sans-serif;
+}
+
+.auction-container {
+    margin: 1rem 2rem 1rem 2rem;
+    background-color: #FAFAFA;
+    padding: 1rem 1.5rem;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    transition: all 0.5s cubic-bezier(.25,.8,.25,1);
+}
+
+.auction-container:hover {
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.auction-container:first-of-type {
+    margin: 0rem 2rem 1rem 2rem;
+}
+
+.auction-container:last-of-type {
+    margin: 1rem 2rem 2rem 2rem;
+}
+
+.auction-title {
+    margin: 0;
+    font-family: Roboto, sans-serif;
+    font-weight: 600;
+    height: 2.5rem;
+}
+
+.auction-description {
+    font-style: italic;
+    font-family: Roboto, sans-serif;
+    font-size: 1em;
+    margin: 0 0 .5rem 0;
+    border-bottom: #BDBDBD solid 1px;
+    padding-bottom: .5rem;
+}
+
+.auction-detail {
+    margin: 0px;
+    font-family: Roboto, sans-serif;
+    font-weight: 400;
+    list-style-type: none;
 }
 
 @media only screen and (max-width: 60.0rem) {
