@@ -1,5 +1,5 @@
 defmodule Renaissance.Auctions do
-  alias Renaissance.{Auction, Repo, User, Users}
+  alias Renaissance.{Auction, Repo, Users}
 
   def create_auction(email, params) do
     auction =
