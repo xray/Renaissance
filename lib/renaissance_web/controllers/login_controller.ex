@@ -9,7 +9,7 @@ defmodule RenaissanceWeb.LoginController do
     if Auth.signed_in?(conn) do
       conn
       |> put_flash(:error, "You're already logged in...")
-      |> redirect(to: Routes.page_path(conn, :index))
+      |> redirect(to: Routes.auction_path(conn, :index))
     else
       render(conn, "login.html", changeset: changeset)
     end
@@ -21,7 +21,7 @@ defmodule RenaissanceWeb.LoginController do
         conn
         |> put_session(:current_user, params["user"]["email"])
         |> put_flash(:info, "You have successfully logged in!")
-        |> redirect(to: Routes.page_path(conn, :index))
+        |> redirect(to: Routes.auction_path(conn, :index))
 
       {:error, error} ->
         conn

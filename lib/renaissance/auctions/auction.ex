@@ -1,7 +1,7 @@
 defmodule Renaissance.Auction do
   use Ecto.Schema
-  alias Renaissance.{User}
   import Ecto.Changeset
+  alias Renaissance.User
 
   @required_fields ~w(title description user_id price end_date)a
   @optional_fields ~w()a
@@ -17,10 +17,10 @@ defmodule Renaissance.Auction do
   end
 
   @doc false
-  def changeset(user, attrs \\ %{}) do
-    user
-    |> cast(attrs, [:title, :description, :user_id, :price, :end_date])
-    |> validate_required([:title, :description, :user_id, :price, :end_date])
+  def changeset(auction, attrs \\ %{}) do
+    auction
+    |> cast(attrs, @required_fields ++ @optional_fields)
+    |> validate_required(@required_fields)
     |> validate_price()
     |> validate_date()
   end

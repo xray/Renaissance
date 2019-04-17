@@ -2,7 +2,7 @@ defmodule Renaissance.Test.AuctionTest do
   use Renaissance.DataCase
 
   require Ecto.Query
-  alias Renaissance.{Auction}
+  alias Renaissance.Auction
 
   describe "user" do
     test "requires title" do

@@ -1,11 +1,13 @@
 defmodule Renaissance.Test.UsersTest do
   use Renaissance.DataCase
-  alias Renaissance.{Users, Repo}
+  require Ecto.Query
+  alias Renaissance.Users
+  alias Renaissance.Repo
 
   @valid_attrs %{email: "mail@mail.com", password: "password"}
 
   describe "users" do
-    test "stores a valid user record in db" do
+    test "stores valid" do
       Users.register_user(@valid_attrs)
 
       user = Users.get_by_email(@valid_attrs.email)
@@ -13,7 +15,7 @@ defmodule Renaissance.Test.UsersTest do
       assert user.password_hash != @valid_attrs.password
     end
 
-    test "does not store an invalid changeset" do
+    test "does not store invalid" do
       Users.register_user(%{email: "mail@mail.com", password: nil})
 
       count = Repo.aggregate(Ecto.Query.from(p in "users"), :count, :id)

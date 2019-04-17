@@ -2,20 +2,21 @@ defmodule Renaissance.Test.UserTest do
   use Renaissance.DataCase
 
   require Ecto.Query
-  alias Renaissance.{User, Repo}
+  alias Renaissance.User
+  alias Renaissance.Repo
 
   @user_one_params %{email: "mail@mail.com", password: "password"}
   @user_two_params %{email: "mail2@mail.com", password: "password123"}
 
   describe "user" do
     test "requires email" do
-      changeset = User.changeset(%User{}, %{email: nil, password: "password"})
+      changeset = User.changeset(%User{}, %{email: nil, password: @user_one_params.password})
       refute changeset.valid?
       assert %{email: ["can't be blank"]} = errors_on(changeset)
     end
 
     test "requires password" do
-      changeset = User.changeset(%User{}, %{email: "mail@mail.com", password: nil})
+      changeset = User.changeset(%User{}, %{email: @user_one_params.email, password: nil})
       refute changeset.valid?
       assert %{password: ["can't be blank"]} = errors_on(changeset)
     end

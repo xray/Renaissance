@@ -1,15 +1,15 @@
 defmodule Renaissance.Auctions do
   import Ecto.Query
-  alias Renaissance.{Auction, Repo, User, Users}
+  alias Renaissance.{Repo, Users, User, Auction}
 
   def create_auction(email, params) do
-    auction =
-      params["auction"]
+    details =
+      params
       |> add_user_id(email)
       |> format_end_date()
       |> format_price()
 
-    Repo.insert(Auction.changeset(%Auction{}, auction))
+    Repo.insert(Auction.changeset(%Auction{}, details))
   end
 
   def get_by_title(title) do
@@ -46,21 +46,18 @@ defmodule Renaissance.Auctions do
   end
 
   defp format_price(params) do
-    price =
+    amount =
       params["price"]
       |> String.replace(".", "")
-      |> Integer.parse()
-      |> elem(0)
+      |> String.to_integer()
       |> Money.new()
 
-    params
-    |> Map.replace!("price", price)
+    params |> Map.replace!("price", amount)
   end
 
   defp add_user_id(params, email) do
     user_id_value = Users.get_by_email(email).id
 
-    params
-    |> Map.put("user_id", user_id_value)
+    params |> Map.put("user_id", user_id_value)
   end
 end

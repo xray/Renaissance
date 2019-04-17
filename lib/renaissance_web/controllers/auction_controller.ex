@@ -3,14 +3,19 @@ defmodule RenaissanceWeb.AuctionController do
   alias Renaissance.{Auction, Auctions}
   alias RenaissanceWeb.Helpers.{Auth}
 
-  def new(conn, _params) do
-    changeset = Auction.changeset(%Auction{})
-
+  def index(conn, _params) do
     if Auth.signed_in?(conn) do
-      render(conn, "new_auction.html", changeset: changeset)
+      render(conn, "index.html", auctions: Auctions.get_all_auctions())
     else
-      conn
-      |> redirect(to: Routes.login_path(conn, :login))
+      conn |> redirect(to: Routes.login_path(conn, :login))
+    end
+  end
+
+  def new(conn, _params) do
+    if Auth.signed_in?(conn) do
+      render(conn, "new.html", changeset: conn)
+    else
+      conn |> redirect(to: Routes.login_path(conn, :login))
     end
   end
 
@@ -24,19 +29,10 @@ defmodule RenaissanceWeb.AuctionController do
       {:ok, _user} ->
         conn
         |> put_flash(:info, "Auction Created!")
-        |> redirect(to: Routes.page_path(conn, :index))
+        |> redirect(to: Routes.auction_path(conn, :index))
 
       {:error, changeset} ->
-        render(conn, "new_auction.html", changeset: changeset)
-    end
-  end
-
-  def list(conn, _params) do
-    if Auth.signed_in?(conn) do
-      render(conn, "auction_list.html", auctions: Auctions.get_all_auctions())
-    else
-      conn
-      |> redirect(to: Routes.login_path(conn, :login))
+        render(conn, "create.html", changeset: changeset)
     end
   end
 end

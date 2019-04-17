@@ -9,7 +9,7 @@ defmodule RenaissanceWeb.RegisterController do
     if Auth.signed_in?(conn) do
       conn
       |> put_flash(:error, "You're already logged in...")
-      |> redirect(to: Routes.page_path(conn, :index))
+      |> redirect(to: Routes.auction_path(conn, :index))
     else
       render(conn, "register.html", changeset: changeset)
     end
