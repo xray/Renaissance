@@ -61,7 +61,7 @@ body {
     margin: 2rem;
     font-family: 'Roboto', sans-serif;
     font-weight: 600;
-    letter-spacing: .5px;
+    letter-spacing: 0.5px;
     color: #607D8B;
     border-bottom: 2px solid #E0E0E0;
     padding: 0 0 5px 0;
@@ -80,12 +80,11 @@ body {
 }
 
 .half-right {
-    margin: 0 0 0 1rem;
+    margin-left: 1rem;
 }
 
 .half-left {
-
-    margin: 0 1rem 0 0;
+    margin-right: 1rem;
 }
 
 .form-section-horizontal {
@@ -98,7 +97,7 @@ body {
     margin-bottom: 1rem;
 }
 
-.form-text{
+.form-text {
     font-size: 18px !important;
 }
 
@@ -125,16 +124,16 @@ body {
     font-family: 'Roboto', sans-serif;
     background-color: transparent;
     border: 0.1rem solid #d1d1d1;
-    border-radius: .4rem;
+    border-radius: 0.4rem;
     box-shadow: none;
     box-sizing: inherit;
     height: 3.8rem;
-    padding: .6rem 1.0rem;
+    padding: 0.6rem 1.0rem;
     width: 50%;
 }
 
-.dollar-sign{
-    margin: .6rem .5rem 2rem 0;
+.dollar-sign {
+    margin: 0.6rem 0.5rem 2rem 0;
     font-family: 'Roboto', sans-serif;
 }
 
@@ -144,7 +143,7 @@ body {
     padding: 1rem 1.5rem;
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    transition: all 0.5s cubic-bezier(.25,.8,.25,1);
+    transition: all 0.5s cubic-bezier(0.25,0.8,0.25,1);
 }
 
 .auction-container:hover {
@@ -170,9 +169,9 @@ body {
     font-style: italic;
     font-family: Roboto, sans-serif;
     font-size: 1em;
-    margin: 0 0 .5rem 0;
+    margin-bottom: 0.5rem;
     border-bottom: #BDBDBD solid 1px;
-    padding-bottom: .5rem;
+    padding-bottom: 0.5rem;
 }
 
 .auction-detail {
