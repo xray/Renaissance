@@ -4,9 +4,15 @@ defmodule Renaissance.Auctions do
 
   def create_auction(email, params) do
     details =
-      params
+      if Map.has_key?(params, "auction") do
+        params["auction"]
+      else
+        params
+      end
+
+    details =
+      details
       |> add_user_id(email)
-      |> format_end_date()
       |> format_price()
 
     Repo.insert(Auction.changeset(%Auction{}, details))
@@ -21,28 +27,16 @@ defmodule Renaissance.Auctions do
       from a in Auction,
         join: u in User,
         on: u.id == a.user_id,
-        select: {a.title, a.description, a.price, a.end_date, u.email}
+        select: {a.title, a.description, a.price, a.end_auction_at, u.email}
 
-    for {title, description, price, end_date, seller} <- Repo.all(query),
+    for {title, description, price, end_auction_at, seller} <- Repo.all(query),
         do: %{
           title: title,
           description: description,
           price: Money.to_string(price),
-          end_date: DateTime.to_string(end_date),
+          end_auction_at: DateTime.to_string(end_auction_at),
           seller: seller
         }
-  end
-
-  defp format_end_date(params) do
-    datetime =
-      "#{params["end_date_day"]}T#{params["end_date_time"]}:00-05:00"
-      |> DateTime.from_iso8601()
-      |> elem(1)
-
-    params
-    |> Map.delete("end_date_day")
-    |> Map.delete("end_date_time")
-    |> Map.put("end_date", datetime)
   end
 
   defp format_price(params) do
@@ -56,8 +50,6 @@ defmodule Renaissance.Auctions do
   end
 
   defp add_user_id(params, email) do
-    user_id_value = Users.get_by_email(email).id
-
-    params |> Map.put("user_id", user_id_value)
+    params |> Map.put("user_id", Users.get_by_email(email).id)
   end
 end

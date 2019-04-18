@@ -2,11 +2,18 @@ defmodule Renaissance.Test.AuctionsTest do
   use Renaissance.DataCase
   alias Renaissance.{Auctions, Auction, Users, Repo}
 
+  @end_date_time %{
+    "day" => "15",
+    "hour" => "14",
+    "minute" => "3",
+    "month" => "4",
+    "year" => "3019"
+  }
+
   @auction_one %{
     "title" => "Test Title",
     "description" => "Test description.",
-    "end_date_day" => "3019-04-15",
-    "end_date_time" => "14:03",
+    "end_auction_at" => @end_date_time,
     "price" => "10.00"
   }
 
@@ -15,8 +22,7 @@ defmodule Renaissance.Test.AuctionsTest do
   @auction_two %{
     "title" => "Test Two Title",
     "description" => "Test two description.",
-    "end_date_day" => "3019-04-15",
-    "end_date_time" => "14:03",
+    "end_auction_at" => @end_date_time,
     "price" => "15.00"
   }
 
@@ -50,12 +56,12 @@ defmodule Renaissance.Test.AuctionsTest do
 
       assert Enum.at(auctions, 0).title == @auction_one["title"]
       assert Enum.at(auctions, 0).description == @auction_one["description"]
-      assert Enum.at(auctions, 0).end_date == "3019-04-15 19:03:00Z"
+      assert Enum.at(auctions, 0).end_auction_at == "3019-04-15 14:03:00Z"
       assert Enum.at(auctions, 0).seller == "test@suite.com"
       assert Enum.at(auctions, 0).price == "$10.00"
       assert Enum.at(auctions, 1).title == @auction_two["title"]
       assert Enum.at(auctions, 1).description == @auction_two["description"]
-      assert Enum.at(auctions, 1).end_date == "3019-04-15 19:03:00Z"
+      assert Enum.at(auctions, 1).end_auction_at == "3019-04-15 14:03:00Z"
       assert Enum.at(auctions, 1).seller == "test@suite.com"
       assert Enum.at(auctions, 1).price == "$15.00"
     end

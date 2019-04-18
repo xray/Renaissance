@@ -2,41 +2,49 @@
   <div class="pageGroup">
     <h1 class="lbl-group">Create an Auction</h1>
     <%= form_for @changeset, Routes.auction_path(@conn, :create), fn f -> %>
-  
-      <div class="form-section">
-        <%= label f, :title, class: "lbl-form" %>
-        <%= text_input f, :title,  class: "txt-form", placeholder: "Auction Title", required: true %>
-        <%= error_tag f, :title %>
-      </div>
 
-      <div class="form-section">
-          <%= label f, :description, class: "lbl-form" %>
-          <%= text_input f, :description, class: "txt-form", placeholder: "Item Description", required: true %>
-          <%= error_tag f, :description %>
-        </div>
+    <div class="form-section">
+      <%= label f, :title, class: "lbl-form" %>
+      <%= text_input f, :title,  class: "txt-form",
+      placeholder: "Auction Title", required: true %>
+      <%= error_tag f, :title %>
+    </div>
 
-      <div class="form-section form-section-horizontal">
-        <div class="form-section-half half-left">
-            <%= label f, "Price", class: "lbl-form" %>
-            <div class="form-section-horizontal">
-              <p class="dollar-sign">$</p>
-              <%= number_input f, :price,  class: "txt-form", required: true, min: 1.00, step: 0.01, value: 1.00 %>
-            </div>
-            <%= error_tag f, :price %>
+    <div class="form-section">
+      <%= label f, :description, class: "lbl-form" %>
+      <%= text_input f, :description, class: "txt-form",
+      placeholder: "Item Description", required: true %>
+      <%= error_tag f, :description %>
+    </div>
+
+    <div class="form-section form-section-horizontal">
+      <div class="form-section-half half-left">
+        <%= label f, "Price", class: "lbl-form" %>
+        <div class="form-section-horizontal">
+          <p class="dollar-sign">$</p>
+          <%= number_input f, :price,  class: "txt-form",
+          required: true, min: 0.01, step: 0.01, value: 0.01 %>
         </div>
-        <div class="form-section-half half-right">
-            <%= label f, "End Date and Time", class: "lbl-form" %>
-            <div class="form-multi-input">
-              <%= date_input f, :end_date_day,  class: "date-form half-left", placeholder: "Item Description", required: true %>
-              <%= time_input f, :end_date_time,  class: "date-form half-right", placeholder: "Item Description", required: true %>
-            </div>
-            <%= error_tag f, :end_date %>
-          </div>
+        <%= error_tag f, :price %>
       </div>
-  
-      <div class="form-section">
-        <%= submit "Create Auction" %>
+    </div>
+
+    <div class="form-section">
+      <%= label f, "End Date and Time (UTC)", class: "lbl-form" %>
+      <a class="help-link" href="https://www.worldtimeserver.com/convert_time_in_UTC.aspx">
+          &#9432; <i>Time Zone Converter</i>
+      </a>
+      <div class="form-multi-input">
+        <%= datetime_select f, :end_auction_at, required: true,
+        class: "form-control",  year: [options: 2019..2030] %>
       </div>
-    <% end %>
+      <%= error_tag f, :end_auction_at %>
+    </div>
   </div>
+
+  <div class="form-section">
+    <%= submit "Create Auction" %>
+  </div>
+  <% end %>
+</div>
 </div>

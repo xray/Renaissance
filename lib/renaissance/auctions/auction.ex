@@ -3,14 +3,14 @@ defmodule Renaissance.Auction do
   import Ecto.Changeset
   alias Renaissance.User
 
-  @required_fields ~w(title description user_id price end_date)a
+  @required_fields ~w(title description user_id price end_auction_at)a
   @optional_fields ~w()a
 
   schema "auctions" do
     field :title, :string
     field :description, :string
     field :price, Money.Ecto.Amount.Type
-    field :end_date, :utc_datetime
+    field :end_auction_at, :utc_datetime
     belongs_to :user, User
 
     timestamps(type: :utc_datetime)
@@ -26,24 +26,22 @@ defmodule Renaissance.Auction do
   end
 
   defp validate_price(changeset) do
-    item_price = get_change(changeset, :price)
-    zero_dollars = Money.new(000, :USD)
-    one_dollar = Money.new(100, :USD)
+    {_, amount} = Money.Ecto.Amount.Type.dump(get_change(changeset, :price, 0))
 
-    if Money.compare(item_price || one_dollar, zero_dollars) == 1 do
+    if 0 < amount do
       changeset
     else
-      add_error(changeset, :price, "Price needs to be greater than 0.")
+      add_error(changeset, :price, "must be greater than 0")
     end
   end
 
   defp validate_date(changeset) do
-    auction_complete = get_change(changeset, :end_date)
+    auction_complete = get_change(changeset, :end_auction_at)
 
     if DateTime.compare(DateTime.utc_now(), auction_complete || DateTime.utc_now()) == :lt do
       changeset
     else
-      add_error(changeset, :end_date, "End date needs to be in the future.")
+      add_error(changeset, :end_auction_at, "should be in the future")
     end
   end
 end

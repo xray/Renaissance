@@ -1,7 +1,7 @@
 defmodule RenaissanceWeb.AuctionController do
   use RenaissanceWeb, :controller
-  alias Renaissance.{Auction, Auctions}
-  alias RenaissanceWeb.Helpers.{Auth}
+  alias Renaissance.Auctions
+  alias RenaissanceWeb.Helpers.Auth
 
   def index(conn, _params) do
     if Auth.signed_in?(conn) do
@@ -20,12 +20,12 @@ defmodule RenaissanceWeb.AuctionController do
   end
 
   def create(conn, params) do
-    changeset =
+    response =
       conn
       |> get_session(:current_user)
       |> Auctions.create_auction(params)
 
-    case changeset do
+    case response do
       {:ok, _user} ->
         conn
         |> put_flash(:info, "Auction Created!")
