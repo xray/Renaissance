@@ -11,11 +11,11 @@ defmodule RenaissanceWeb.RegisterController do
       |> put_flash(:error, "You're already logged in...")
       |> redirect(to: Routes.auction_path(conn, :index))
     else
-      render(conn, "register.html", changeset: changeset)
+      render(conn, "new.html", changeset: changeset)
     end
   end
 
-  def register(conn, params) do
+  def create(conn, params) do
     case Users.register_user(params["user"]) do
       {:ok, _user} ->
         conn
@@ -23,7 +23,7 @@ defmodule RenaissanceWeb.RegisterController do
         |> redirect(to: Routes.login_path(conn, :login))
 
       {:error, changeset} ->
-        render(conn, "register.html", changeset: changeset)
+        render(conn, "create.html", changeset: changeset)
     end
   end
 end

@@ -7,12 +7,12 @@ defmodule Renaissance.Users do
     Repo.insert(changeset)
   end
 
-  def get_by_email(email) do
-    Repo.get_by(User, email: email)
+  def get(id) do
+    Repo.get(User, id)
   end
 
   def verify_login(email, password) do
-    get_by_email(email)
+    Repo.get_by(User, email: email)
     |> Bcrypt.check_pass(password)
   end
 end

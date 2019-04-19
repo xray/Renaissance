@@ -1,69 +1,82 @@
 defmodule Renaissance.Test.AuctionsTest do
   use Renaissance.DataCase
-  alias Renaissance.{Auctions, Auction, Users, Repo}
+  alias Renaissance.{Auctions, Users, Repo}
 
-  @end_date_time %{
-    "day" => "15",
-    "hour" => "14",
-    "minute" => "3",
-    "month" => "4",
-    "year" => "3019"
+  @valid_end %{
+    day: "15",
+    hour: "14",
+    minute: "3",
+    month: "4",
+    year: "3019"
   }
 
   @auction_one %{
     "title" => "Test Title",
     "description" => "Test description.",
-    "end_auction_at" => @end_date_time,
+    "end_auction_at" => @valid_end,
     "price" => "10.00"
   }
 
-  @user_params %{email: "test@suite.com", password: "password"}
+  def fixture(:user) do
+    user_params = %{email: "test@suite.com", password: "password"}
+    {:ok, user} = Users.register_user(user_params)
+    user
+  end
 
   @auction_two %{
-    "title" => "Test Two Title",
-    "description" => "Test two description.",
-    "end_auction_at" => @end_date_time,
+    "title" => "Test Title Two",
+    "description" => "Test description two.",
+    "end_auction_at" => @valid_end,
     "price" => "15.00"
   }
 
   describe "auctions" do
     test "stores a valid auction in the db" do
-      Users.register_user(@user_params)
-      Auctions.create_auction(@user_params.email, @auction_one)
+      seller_id = fixture(:user).id
+      {:ok, auction_created} = Auctions.create_auction(seller_id, @auction_one)
 
-      auction = Repo.get_by(Auction, title: "Test Title")
-      assert auction.title == @auction_one["title"]
-      assert auction.description == @auction_one["description"]
-      assert Money.compare(auction.price, Money.new(10_00, :USD)) == 0
+      assert auction_created.title == @auction_one["title"]
+      assert auction_created.description == @auction_one["description"]
+      assert Money.compare(auction_created.price, Money.new(10_00)) == 0
     end
 
-    test "does not store an invalid changeset" do
-      Users.register_user(@user_params)
+    test "not stored when title is blank" do
+      seller_id = fixture(:user).id
 
       invalid_params = Map.put(@auction_two, "title", "")
-      Auctions.create_auction(@user_params.email, invalid_params)
+      Auctions.create_auction(seller_id, invalid_params)
 
       count = Repo.aggregate(Ecto.Query.from(p in "auctions"), :count, :id)
       assert 0 == count
     end
 
-    test "returns a list of auctions" do
-      Users.register_user(@user_params)
-      Auctions.create_auction(@user_params.email, @auction_one)
-      Auctions.create_auction(@user_params.email, @auction_two)
+    test "not stored when invalid seller_id" do
+      seller_id = fixture(:user).id
+      invalid_seller_id = seller_id * 7 - 1
 
-      auctions = Auctions.get_all_auctions()
+      exception =
+        assert_raise Ecto.ConstraintError, fn ->
+          Auctions.create_auction(invalid_seller_id, @auction_two)
+        end
 
-      assert Enum.at(auctions, 0).title == @auction_one["title"]
-      assert Enum.at(auctions, 0).description == @auction_one["description"]
-      assert Enum.at(auctions, 0).end_auction_at == "3019-04-15 14:03:00Z"
-      assert Enum.at(auctions, 0).seller == "test@suite.com"
-      assert Enum.at(auctions, 0).price == "$10.00"
-      assert Enum.at(auctions, 1).title == @auction_two["title"]
-      assert Enum.at(auctions, 1).description == @auction_two["description"]
-      assert Enum.at(auctions, 1).end_auction_at == "3019-04-15 14:03:00Z"
-      assert Enum.at(auctions, 1).seller == "test@suite.com"
-      assert Enum.at(auctions, 1).price == "$15.00"
+      assert exception.message =~ "foreign_key_constraint"
+    end
+
+    test "returns an index of auctions when logged in" do
+      seller_id = fixture(:user).id
+      {:ok, first} = Auctions.create_auction(seller_id, @auction_one)
+      {:ok, second} = Auctions.create_auction(seller_id, @auction_two)
+
+      count = Repo.aggregate(Ecto.Query.from(p in "auctions"), :count, :id)
+      assert 2 == count
+
+      assert first.title == @auction_one["title"]
+      assert first.description == @auction_one["description"]
+      assert first.price == Money.new(10_00)
+
+      assert second.title == @auction_two["title"]
+      assert second.description == @auction_two["description"]
+      assert second.price == Money.new(15_00)
     end
   end
 end

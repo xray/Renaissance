@@ -1,8 +1,8 @@
 defmodule Renaissance.Auctions do
   import Ecto.Query
-  alias Renaissance.{Repo, Users, User, Auction}
+  alias Renaissance.{Repo, Auction}
 
-  def create_auction(email, params) do
+  def create_auction(user_id, params) do
     details =
       if Map.has_key?(params, "auction") do
         params["auction"]
@@ -12,44 +12,39 @@ defmodule Renaissance.Auctions do
 
     details =
       details
-      |> add_user_id(email)
       |> format_price()
+      |> Map.put("seller_id", user_id)
 
     Repo.insert(Auction.changeset(%Auction{}, details))
   end
 
-  def get_by_title(title) do
-    Repo.get_by(Auction, title: title)
+  def get(id) do
+    Auction
+    |> preload(:seller)
+    |> Repo.get!(id)
   end
 
-  def get_all_auctions() do
-    query =
-      from a in Auction,
-        join: u in User,
-        on: u.id == a.user_id,
-        select: {a.title, a.description, a.price, a.end_auction_at, u.email}
+  def get_all() do
+    Auction
+    |> preload(:seller)
+    |> Repo.all()
+  end
 
-    for {title, description, price, end_auction_at, seller} <- Repo.all(query),
-        do: %{
-          title: title,
-          description: description,
-          price: Money.to_string(price),
-          end_auction_at: DateTime.to_string(end_auction_at),
-          seller: seller
-        }
+  defp extract_amount(amount) do
+    if is_nil(amount) do
+      "000"
+    else
+      amount
+    end
   end
 
   defp format_price(params) do
     amount =
-      params["price"]
+      extract_amount(params["price"])
       |> String.replace(".", "")
       |> String.to_integer()
       |> Money.new()
 
-    params |> Map.replace!("price", amount)
-  end
-
-  defp add_user_id(params, email) do
-    params |> Map.put("user_id", Users.get_by_email(email).id)
+    Map.replace!(params, "price", amount)
   end
 end

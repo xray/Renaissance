@@ -1,7 +1,7 @@
 defmodule RenaissanceWeb.Helpers.Auth do
   def signed_in?(conn) do
-    user_email = Plug.Conn.get_session(conn, :current_user)
+    current_user_id = Plug.Conn.get_session(conn, :current_user_id)
 
-    user_email != nil
+    current_user_id != nil
   end
 end

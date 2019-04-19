@@ -4,19 +4,19 @@
     <div class="form-text content-text">
       <a href="<%= Routes.login_path(@conn, :login) %>">Already have an account? Login Here.</a>
     </div>
-    <%= form_for @changeset, Routes.register_path(@conn, :register), fn f -> %>
+    <%= form_for @changeset, Routes.register_path(@conn, :create), fn f -> %>
       <div class="form-section">
         <%= label f, :email, class: "lbl-form" %>
         <%= email_input f, :email, class: "txt-form", placeholder: "Email", required: true %>
         <%= error_tag f, :email %>
       </div>
-  
+
       <div class="form-section">
         <%= label f, :password, class: "lbl-form" %>
         <%= password_input f, :password,  class: "txt-form", placeholder: "Password", required: true %>
         <%= error_tag f, :password %>
       </div>
-  
+
       <div class="form-section">
         <%= submit "Submit" %>
       </div>

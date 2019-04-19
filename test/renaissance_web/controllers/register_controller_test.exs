@@ -1,32 +1,32 @@
 defmodule RenaissanceWeb.RegisterControllerTest do
   use RenaissanceWeb.ConnCase
 
-  @user_params %{email: "mail@mail.com", password: "password"}
+  @valid_params %{email: "mail@mail.com", password: "password"}
 
-  test "GET /register" do
-    conn = get(build_conn(), "/register")
+  test "GET /register/new" do
+    conn = get(build_conn(), "/register/new")
     assert html_response(conn, 200) =~ "Register"
   end
 
-  test "POST /register with valid email and password" do
-    conn = post(build_conn(), "/register", %{"user" => @user_params})
+  test "GET /register/new redirects to index if user logged in" do
+    conn =
+      build_conn()
+      |> post("/register", %{"user" => @valid_params})
+      |> post("/login", %{"user" => @valid_params})
+      |> get("/register/new")
+
+    assert get_flash(conn, :error) == "You're already logged in..."
+    assert redirected_to(conn, 302) == "/"
+  end
+
+  test "POST /register succeeds when params valid" do
+    conn = post(build_conn(), "/register", %{"user" => @valid_params})
 
     assert get_flash(conn, :info) == "You have successfully signed up!"
   end
 
-  test "POST /register with no email or password" do
+  test "POST /register fails when param invalid" do
     conn = post(build_conn(), "/register", %{"user" => %{email: "", password: ""}})
     assert html_response(conn, 200) =~ "can&#39;t be blank"
-  end
-
-  test "GET /register while logged in" do
-    conn =
-      build_conn()
-      |> post("/register", %{"user" => @user_params})
-      |> post("/login", %{"user" => @user_params})
-      |> get("/register")
-
-    assert get_flash(conn, :error) == "You're already logged in..."
-    assert redirected_to(conn, 302) == "/"
   end
 end

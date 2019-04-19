@@ -10,7 +10,7 @@ defmodule Renaissance.User do
     field :email, :string, unique: true
     field :password, :string, virtual: true
     field :password_hash, :string
-    has_many :auctions, Auction
+    has_many :auctions, Auction, foreign_key: :seller_id
 
     timestamps(type: :utc_datetime)
   end

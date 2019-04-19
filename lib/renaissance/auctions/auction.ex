@@ -3,7 +3,7 @@ defmodule Renaissance.Auction do
   import Ecto.Changeset
   alias Renaissance.User
 
-  @required_fields ~w(title description user_id price end_auction_at)a
+  @required_fields ~w(title description seller_id price end_auction_at)a
   @optional_fields ~w()a
 
   schema "auctions" do
@@ -11,7 +11,7 @@ defmodule Renaissance.Auction do
     field :description, :string
     field :price, Money.Ecto.Amount.Type
     field :end_auction_at, :utc_datetime
-    belongs_to :user, User
+    belongs_to :seller, User
 
     timestamps(type: :utc_datetime)
   end
@@ -28,7 +28,7 @@ defmodule Renaissance.Auction do
   defp validate_price(changeset) do
     {_, amount} = Money.Ecto.Amount.Type.dump(get_change(changeset, :price, 0))
 
-    if 0 < amount do
+    if amount > 0 do
       changeset
     else
       add_error(changeset, :price, "must be greater than 0")

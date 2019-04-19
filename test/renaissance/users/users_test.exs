@@ -8,9 +8,8 @@ defmodule Renaissance.Test.UsersTest do
 
   describe "users" do
     test "stores valid" do
-      Users.register_user(@valid_attrs)
+      {:ok, user} = Users.register_user(@valid_attrs)
 
-      user = Users.get_by_email(@valid_attrs.email)
       assert user.email == @valid_attrs.email
       assert user.password_hash != @valid_attrs.password
     end

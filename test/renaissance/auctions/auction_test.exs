@@ -10,7 +10,7 @@ defmodule Renaissance.Test.AuctionTest do
   @valid_params %{
     title: "Test title",
     description: "Test description",
-    user_id: 1,
+    seller_id: 1,
     price: 100,
     end_auction_at: @after_one_day
   }
@@ -38,11 +38,11 @@ defmodule Renaissance.Test.AuctionTest do
     end
 
     test "requires user id" do
-      invalid_params = Map.put(@valid_params, :user_id, nil)
+      invalid_params = Map.put(@valid_params, :seller_id, nil)
       changeset = Auction.changeset(%Auction{}, invalid_params)
 
       refute changeset.valid?
-      assert "can't be blank" in errors_on(changeset).user_id
+      assert "can't be blank" in errors_on(changeset).seller_id
     end
 
     test "requires price" do
