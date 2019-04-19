@@ -16,15 +16,11 @@ defmodule RenaissanceWeb.Router do
   scope "/", RenaissanceWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
-    get "/register", RegisterController, :new
-    post "/register", RegisterController, :register
+    get "/", AuctionController, :index
     get "/login", LoginController, :login
     post "/login", LoginController, :verify
-  end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", RenaissanceWeb do
-  #   pipe_through :api
-  # end
+    resources "/register", RegisterController, only: [:new, :create]
+    resources "/auctions", AuctionController, only: [:index, :create, :new, :show]
+  end
 end

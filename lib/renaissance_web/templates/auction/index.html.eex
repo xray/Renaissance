@@ -1,0 +1,11 @@
+<div class="pageContent">
+  <div class="pageGroup">
+    <h1 class="lbl-group">Auctions</h1>
+    <div class="content-text">
+        <a href="<%= Routes.auction_path(@conn, :new) %>">Start an Auction</a>
+    </div>
+    <%= for auction <- @auctions do %>
+      <%= render("show.html", auction: auction) %>
+    <% end %>
+  </div>
+</div>
