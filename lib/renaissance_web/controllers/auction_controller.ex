@@ -2,6 +2,7 @@ defmodule RenaissanceWeb.AuctionController do
   use RenaissanceWeb, :controller
   alias Renaissance.Auctions
   alias RenaissanceWeb.Helpers.Auth
+  alias RenaissanceWeb.AuctionView
 
   def index(conn, _params) do
     if Auth.signed_in?(conn) do
@@ -39,7 +40,15 @@ defmodule RenaissanceWeb.AuctionController do
   def show(conn, %{"id" => id}) do
     if Auth.signed_in?(conn) do
       {id, _} = Integer.parse(id)
-      render(conn, "show.html", auction: Auctions.get(id))
+
+      auction = Auctions.get(id)
+      end_time = auction.end_auction_at
+
+      render(conn, "show.html", %{
+        auction: auction,
+        time_remaining: AuctionView.time_remaining(end_time),
+        end_time: AuctionView.pretty_time(end_time)
+      })
     else
       redirect(conn, to: Routes.login_path(conn, :login))
     end

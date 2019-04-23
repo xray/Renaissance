@@ -1,6 +1,6 @@
 /* This file is for your main application css. */
 
-@import "./phoenix.css";
+@import './phoenix.css';
 @import url('https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i');
 
 form {
@@ -145,6 +145,17 @@ body {
     color: #4b93b6;
 }
 
+.centered-container {
+    margin: 1rem 2rem 1rem 2rem;
+    background-color: #FAFAFA;
+    padding: 1rem 1.5rem;
+    border-radius: 4px;
+    transition: all 0.5s cubic-bezier(0.25,0.8,0.25,1);
+    list-style-type: none;
+    font-family: Roboto, sans-serif;
+    font-size: 0.8em;
+}
+
 .auction-container {
     margin: 1rem 2rem 1rem 2rem;
     background-color: #FAFAFA;
@@ -152,6 +163,7 @@ body {
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     transition: all 0.5s cubic-bezier(0.25,0.8,0.25,1);
+    font-family: Roboto, sans-serif;
 }
 
 .auction-container:hover {
@@ -190,12 +202,11 @@ body {
 }
 
 @media only screen and (max-width: 60.0rem) {
-
     .pageGroup {
-      width: 80vw;
+        width: 80vw;
     }
 
     .lbl-group {
         font-size: 36px;
     }
-  }
+}

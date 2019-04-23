@@ -20,7 +20,7 @@ defmodule Renaissance.MixProject do
   def application do
     [
       mod: {Renaissance.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:calendar, :timex, :logger, :runtime_tools]
     ]
   end
 
@@ -46,7 +46,9 @@ defmodule Renaissance.MixProject do
       {:bcrypt_elixir, "~> 2.0"},
       {:comeonin, "~> 5.0.0"},
       {:mix_test_watch, "~> 0.8", only: :dev, runtime: false},
-      {:money, "~> 1.4"}
+      {:money, "~> 1.4"},
+      {:calendar, "~> 0.17.5"},
+      {:timex, "~> 3.0"}
     ]
   end
 

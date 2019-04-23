@@ -1,7 +1,16 @@
-<ul class="auction-container">
-  <h4 class="auction-title"><%= @auction.title %></h4>
-  <p class="auction-description"><%= @auction.description %></p>
-  <li class="auction-detail">Price: <%= @auction.price %></li>
-  <li class="auction-detail">Seller: <%= @auction.seller.email %></li>
-  <li class="auction-detail">End Date: <%= @auction.end_auction_at %></li>
-</ul>
+<div class="pageContent">
+  <div class="pageGroup">
+    <h1 class="lbl-group"><%= @auction.title %></h1>
+    <div class="content-text">
+      <i><%= @auction.description %></i>
+      <div class="centered-container">
+        <table>
+          <tr><td>Price:</td><td style="font-weight: 400"><%= @auction.price %></td></tr>
+          <tr><td>Seller:</td><td style="font-weight: 400"> <%= @auction.seller.email %></td></tr>
+          <tr><td>End Date:</td><td style="font-weight: 400"> <%= @end_time %></td></tr>
+        </table>
+      </div>
+      <p><%= @time_remaining %></p>
+      <a class="button" href="<%= Routes.auction_path(@conn, :index) %>">back</a>
+    </div>
+  </div>
