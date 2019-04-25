@@ -1,7 +1,7 @@
 # Renaissance
 Auctions web app built with Elixir framework Phoenix
 
-> `:warning:` WIP
+> :warning: WIP
 
 Greenfield web app that is similar to the basic functionality of eBay.
 
