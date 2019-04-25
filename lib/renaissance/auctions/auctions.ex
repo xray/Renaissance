@@ -13,6 +13,7 @@ defmodule Renaissance.Auctions do
     details =
       details
       |> format_price()
+      |> convert_time()
       |> Map.put("seller_id", user_id)
 
     Repo.insert(Auction.changeset(%Auction{}, details))
@@ -36,6 +37,15 @@ defmodule Renaissance.Auctions do
     else
       amount
     end
+  end
+
+  defp convert_time(params) do
+    utc_end =
+      params["end_auction_at"]
+      |> Timex.to_datetime(:local)
+      |> Timex.Timezone.convert(:utc)
+
+    Map.replace!(params, "end_auction_at", utc_end)
   end
 
   defp format_price(params) do

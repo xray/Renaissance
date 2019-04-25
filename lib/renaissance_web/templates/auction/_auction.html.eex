@@ -1,9 +1,10 @@
-<ul class="auction-container">
+ <ul class="auction-container">
   <h4 class="auction-title"><%= @auction.title %></h4>
   <p class="auction-description"><%= @auction.description %></p>
-  <li class="auction-detail">Price: <%= @auction.price %></li>
-  <li class="auction-detail">Seller: <%= @auction.seller.email %></li>
-  <li class="auction-detail">End Date: <%= @auction.end_auction_at %></li>
+  <li>Price: <%= @auction.price %></li>
+  <li>Seller: <%= @auction.seller.email %></li>
+  <li>End Date: <%= RenaissanceWeb.AuctionView.puts_utc_as_local(@auction.end_auction_at) %></li>
 
-  <a class="button button-clear" style="float: right" href="<%= Routes.auction_path(@conn, :show, @auction) %>">more</a>
+  <%= link("more", to: Routes.auction_path(@conn, :show, @auction),
+  class: "button button-clear", style: "float: right") %>
 </ul>
