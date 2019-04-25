@@ -1,4 +1,14 @@
 defmodule RenaissanceWeb.AuctionsLive.Show do
+  @moduledoc """
+  Real-time countdown to end of auction display.
+
+  ## Attribution
+
+    * https://www.theguild.nl/real-world-phoenix-of-groter-dan-a-liveview-dashboard
+    * https://github.com/chrismccord/phoenix_live_view_example
+
+  """
+
   use Phoenix.LiveView
   use Phoenix.HTML
 
