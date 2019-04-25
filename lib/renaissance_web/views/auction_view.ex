@@ -1,20 +1,43 @@
 defmodule RenaissanceWeb.AuctionView do
   use RenaissanceWeb, :view
-  import Calendar.NaiveDateTime
-  alias Timex.{Interval, Duration, Format.Duration.Formatter}
 
-  def pretty_time(end_time) do
-    Calendar.NaiveDateTime.Format.asctime(end_time)
+  @format "{WDshort}, {D} {Mshort} {YYYY} {h24}:{m} {Zabbr}"
+
+  def default_end do
+    current = local_datetime()
+
+    %{
+      day: current.day,
+      hour: current.hour,
+      minute: current.minute,
+      month: current.month,
+      year: current.year
+    }
   end
 
-  def time_remaining(end_time) do
-    if Timex.before?(Timex.now(), end_time) do
-      Timex.Interval.new(from: Timex.now(), until: end_time)
-      |> Interval.duration(:seconds)
-      |> Duration.from_seconds()
-      |> Formatter.format(:humanized)
-    else
-      "Auction is closed."
-    end
+  def local_datetime do
+    DateTime.utc_now() |> local_datetime
+  end
+
+  def local_datetime(utc_time) do
+    utc_time |> Timex.Timezone.convert(:local)
+  end
+
+  def puts_utc_as_local do
+    DateTime.utc_now() |> puts_utc_as_local
+  end
+
+  def puts_utc_as_local(utc_time) do
+    utc_time
+    |> local_datetime()
+    |> Timex.format!(@format)
+  end
+
+  def puts_utc do
+    DateTime.utc_now() |> puts_utc
+  end
+
+  def puts_utc(utc_time) do
+    Timex.format!(utc_time, @format)
   end
 end

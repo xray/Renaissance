@@ -40,7 +40,7 @@ defmodule Renaissance.Test.AuctionsTest do
       assert Money.compare(auction_created.price, Money.new(10_00)) == 0
     end
 
-    test "not stored when title is blank" do
+    test "does not store when title is blank" do
       seller_id = fixture(:user).id
 
       invalid_params = Map.put(@auction_two, "title", "")
@@ -50,7 +50,7 @@ defmodule Renaissance.Test.AuctionsTest do
       assert 0 == count
     end
 
-    test "not stored when invalid seller_id" do
+    test "does not store when invalid seller_id" do
       seller_id = fixture(:user).id
       invalid_seller_id = seller_id * 7 - 1
 

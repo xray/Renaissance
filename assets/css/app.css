@@ -9,6 +9,11 @@ form {
 
 body {
     margin: 0;
+    font-family: Roboto, sans-serif;
+}
+
+.bold {
+    font-weight: 400;
 }
 
 .alert {
@@ -59,7 +64,6 @@ body {
 
 .lbl-group {
     margin: 2rem;
-    font-family: 'Roboto', sans-serif;
     font-weight: 600;
     letter-spacing: 0.5px;
     color: #607D8B;
@@ -103,26 +107,22 @@ body {
 }
 
 .lbl-form {
-    font-family: 'Roboto', sans-serif;
     font-weight: 300;
     color: #616161;
 }
 
 .help-block {
-    font-family: 'Roboto', sans-serif;
     font-weight: 600;
     color: #ef5350;
 }
 
 .content-text {
-    font-family: 'Roboto', sans-serif;
     font-weight: 300;
     font-size: 24px;
     margin: 0 2rem 2rem 2rem;
 }
 
 .date-form {
-    font-family: 'Roboto', sans-serif;
     background-color: transparent;
     border: 0.1rem solid #d1d1d1;
     border-radius: 0.4rem;
@@ -135,26 +135,15 @@ body {
 
 .dollar-sign {
     margin: 0.6rem 0.5rem 2rem 0;
-    font-family: 'Roboto', sans-serif;
 }
 
-.help-link {
+.help-info {
     margin: -1rem 0 0.5rem 0.5rem;
-    font-family: 'Roboto', sans-serif;
+    padding: 0.25rem 0 0.25rem 0;
     font-size: 0.8em;
     color: #4b93b6;
 }
 
-.centered-container {
-    margin: 1rem 2rem 1rem 2rem;
-    background-color: #FAFAFA;
-    padding: 1rem 1.5rem;
-    border-radius: 4px;
-    transition: all 0.5s cubic-bezier(0.25,0.8,0.25,1);
-    list-style-type: none;
-    font-family: Roboto, sans-serif;
-    font-size: 0.8em;
-}
 
 .auction-container {
     margin: 1rem 2rem 1rem 2rem;
@@ -163,7 +152,6 @@ body {
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     transition: all 0.5s cubic-bezier(0.25,0.8,0.25,1);
-    font-family: Roboto, sans-serif;
 }
 
 .auction-container:hover {
@@ -180,25 +168,51 @@ body {
 
 .auction-title {
     margin: 0;
-    font-family: Roboto, sans-serif;
     font-weight: 600;
     height: 2.5rem;
 }
 
 .auction-description {
     font-style: italic;
-    font-family: Roboto, sans-serif;
     font-size: 1em;
     margin-bottom: 0.5rem;
     border-bottom: #BDBDBD solid 1px;
     padding-bottom: 0.5rem;
 }
 
-.auction-detail {
+.auction-container li {
     margin: 0;
-    font-family: Roboto, sans-serif;
     font-weight: 400;
     list-style-type: none;
+}
+
+.auction-detail {
+    margin: 0;
+    font-weight: 400;
+    list-style-type: none;
+}
+
+.show-auction {
+    overflow: -webkit-paged-x;
+}
+.show-auction.content-text {
+    font-size: 1.37em;
+}
+
+.centered-container {
+    margin: 1rem 2rem 1rem 2rem;
+    background-color: #FAFAFA;
+    padding: 1rem 1.5rem;
+    border-radius: 4px;
+    transition: all 0.5s cubic-bezier(0.25,0.8,0.25,1);
+    list-style-type: none;
+    font-size: 0.7em;
+}
+
+.countdown {
+    font-size: 0.8em;
+    padding-bottom: 2rem;
+    text-align: -webkit-center;
 }
 
 @media only screen and (max-width: 60.0rem) {
