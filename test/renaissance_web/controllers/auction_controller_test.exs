@@ -104,7 +104,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
 
     test "GET /auctions/:id fails when invalid id", %{conn: conn} do
       assert_error_sent 404, fn ->
-        get(conn, "/auctions/285")
+        get(conn, "/auctions/0")
       end
     end
   end
