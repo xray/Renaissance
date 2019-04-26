@@ -15,7 +15,10 @@ config :renaissance, RenaissanceWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "7K/emRxYZvCFq+vEAQruSSbcPrIGzz6N/meoa0Tdk8VuO9+ID1pxEH4s2n3QoCTZ",
   render_errors: [view: RenaissanceWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Renaissance.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: Renaissance.PubSub, adapter: Phoenix.PubSub.PG2],
+  live_view: [
+    signing_salt: "KnJmPwOHmErCSXODbiRqKKTSGbxhzMkabsKoAbx46xkf0/RalZHBkq6jWEwXR0JZ"
+  ]
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -24,6 +27,8 @@ config :logger, :console,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
+
+config :phoenix, :template_engines, leex: Phoenix.LiveView.Engine
 
 config :money,
   default_currency: :USD,
