@@ -1,5 +1,5 @@
-  <div class="pageContent">
-    <div class="pageGroup show-auction">
+<div class="pageContent">
+  <div class="pageGroup show-auction">
     <h1 class="lbl-group"><%= @auction.title %></h1>
     <div class="content-text show-auction">
       <i><%= @auction.description %></i>
@@ -9,7 +9,7 @@
           <tr class="table-row"><td class="table-section table-left">Seller:</td><td class="bold table-section table-right"> <%= @auction.seller.email %></td></tr>
           <tr class="table-row">
             <td class="table-section table-left">End Date:</td>
-            <td class="bold table-section table-right"><%= RenaissanceWeb.AuctionView.puts_utc_as_local(@auction.end_auction_at) %></td>
+            <td class="bold table-section table-right"><%= @auction.end_auction_at %></td>
           </tr>
         </table>
       </div>
@@ -17,3 +17,4 @@
       <%= link "back", to: Routes.auction_path(@conn, :index), class: "button" %>
     </div>
   </div>
+</div>

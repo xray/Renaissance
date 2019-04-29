@@ -27,21 +27,25 @@
         </div>
         <%= error_tag f, :price %>
       </div>
+
+
       <div class="form-section-half half-right">
-        <%= label f, :end_auction_at, "End Date and Time", class: "lbl-form" %>
+        <%= label f, :end_auction_at, "End Date and Time (UTC)", class: "lbl-form" %>
+        <a class="help-info" href="https://www.worldtimeserver.com/convert_time_in_UTC.aspx">
+          &#9432; <i>Time Zone Converter</i>
+        </a>
         <div class="form-multi-input">
           <%= datetime_select f, :end_auction_at, required: true,
           class: "form-control", year: [options: 2019..2030],
-          default: RenaissanceWeb.AuctionView.default_end() %>
+          default: default_end() %>
         </div>
         <%= error_tag f, :end_auction_at %>
       </div>
     </div>
 
     <div class="form-section">
-    <%= submit "Create Auction" %>
-  </div>
+      <%= submit "Create Auction" %>
+    </div>
   </div>
   <% end %>
 </div>
-  

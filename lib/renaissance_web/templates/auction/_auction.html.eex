@@ -3,5 +3,6 @@
   <p class="auction-description"><%= @auction.description %></p>
   <li>Price: <%= @auction.price %></li>
   <li>Seller: <%= @auction.seller.email %></li>
-  <li>End Date: <%= RenaissanceWeb.AuctionView.puts_utc_as_local(@auction.end_auction_at) %></li>
+  <li>End Date: <%= @auction.end_auction_at %></li>
 </a>
+  
