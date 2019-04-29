@@ -52,7 +52,8 @@ config :renaissance, RenaissanceWeb.Endpoint,
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
       ~r{lib/renaissance_web/views/.*(ex)$},
-      ~r{lib/renaissance_web/templates/.*(eex)$}
+      ~r{lib/renaissance_web/templates/.*(eex)$},
+      ~r{lib/renaissance_web/live/.*(ex)$}
     ]
   ]
 

@@ -33,12 +33,12 @@ defmodule Renaissance.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.4.2"},
+      {:phoenix, github: "phoenixframework/phoenix", branch: "v1.4", override: true},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_ecto, "~> 4.0"},
       {:ecto_sql, "~> 3.0"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.11"},
+      {:phoenix_html, "~> 2.13", github: "phoenixframework/phoenix_html", override: true},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
@@ -46,7 +46,10 @@ defmodule Renaissance.MixProject do
       {:bcrypt_elixir, "~> 2.0"},
       {:comeonin, "~> 5.0.0"},
       {:mix_test_watch, "~> 0.8", only: :dev, runtime: false},
-      {:money, "~> 1.4"}
+      {:money, "~> 1.4"},
+      {:phoenix_live_view, github: "phoenixframework/phoenix_live_view"},
+      {:calendar, "~> 0.17.5"},
+      {:timex, "~> 3.1"}
     ]
   end
 

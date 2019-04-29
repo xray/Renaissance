@@ -2,24 +2,26 @@
   <div class="pageGroup">
     <h1 class="lbl-group">Login</h1>
     <div class="form-text content-text">
-        <a href="<%= Routes.register_path(@conn, :new) %>">Don't have an account? Register Here.</a>
+      <%= link("Don't have an account? Register Here.", to: Routes.register_path(@conn, :new)) %>
     </div>
+
     <%= form_for @changeset, Routes.login_path(@conn, :verify), fn f -> %>
       <div class="form-section">
         <%= label f, :email, class: "lbl-form" %>
         <%= email_input f, :email, class: "txt-form", placeholder: "Email", required: true %>
         <%= error_tag f, :email %>
       </div>
-  
+
       <div class="form-section">
         <%= label f, :password, class: "lbl-form" %>
         <%= password_input f, :password,  class: "txt-form", placeholder: "Password", required: true %>
         <%= error_tag f, :error %>
       </div>
-  
+
       <div class="form-section">
         <%= submit "Submit" %>
       </div>
     <% end %>
+
   </div>
 </div>

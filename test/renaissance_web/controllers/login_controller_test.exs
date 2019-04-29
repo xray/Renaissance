@@ -5,7 +5,6 @@ defmodule RenaissanceWeb.LoginControllerTest do
 
   test "GET /login" do
     conn = get(build_conn(), "/login")
-
     assert html_response(conn, 200) =~ "Login"
   end
 

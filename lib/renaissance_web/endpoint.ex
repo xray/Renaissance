@@ -1,6 +1,8 @@
 defmodule RenaissanceWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :renaissance
 
+  socket "/live", Phoenix.LiveView.Socket
+
   socket "/socket", RenaissanceWeb.UserSocket,
     websocket: true,
     longpoll: false

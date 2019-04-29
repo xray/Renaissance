@@ -2,10 +2,8 @@
   <div class="pageGroup">
     <h1 class="lbl-group">Auctions</h1>
     <div class="content-text">
-        <a href="<%= Routes.auction_path(@conn, :new) %>">Start an Auction</a>
+      <%= link("Start an Auction", to: Routes.auction_path(@conn, :new)) %>
     </div>
-    <%= for auction <- @auctions do %>
-      <%= render("show.html", auction: auction) %>
-    <% end %>
+    <%= render_many @auctions, RenaissanceWeb.AuctionView, "_auction.html", conn: @conn %>
   </div>
 </div>
