@@ -42,8 +42,13 @@ defmodule RenaissanceWeb.AuctionsLive.Show do
   end
 
   def time_remaining(end_time) do
-    if Timex.before?(Timex.now(), end_time) do
-      Timex.Interval.new(from: Timex.now(), until: end_time)
+    Timex.now() |> time_remaining(end_time)
+  end
+
+  def time_remaining(start_time, end_time) do
+    # time_remaining/2 is a hack for testing
+    if Timex.before?(start_time, end_time) && Timex.before?(Timex.now(), end_time) do
+      Timex.Interval.new(from: start_time, until: end_time)
       |> Timex.Interval.duration(:seconds)
       |> Timex.Duration.from_seconds()
       |> Timex.Format.Duration.Formatter.format(:humanized)
