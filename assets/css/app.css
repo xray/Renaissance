@@ -24,6 +24,9 @@ body {
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
   border: 0;
   color: #fafafa;
+  animation-name: fade-out;
+  animation-duration: 3s;
+  opacity: 0;
 }
 
 .alert-info {
@@ -80,15 +83,16 @@ body {
 .form-section-half {
   display: flex;
   flex-direction: column;
-  width: 50%;
 }
 
 .half-right {
   margin-left: 1rem;
+  width: 75%;
 }
 
 .half-left {
   margin-right: 1rem;
+  width: 25%;
 }
 
 .form-section-horizontal {
@@ -152,10 +156,12 @@ body {
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
   transition: all 0.5s cubic-bezier(0.25,0.8,0.25,1);
+  color: inherit;
 }
 
 .auction-container:hover {
   box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  color: inherit;
 }
 
 .auction-container:first-of-type {
@@ -198,14 +204,12 @@ body {
 .show-auction.content-text {
   font-size: 1.37em;
 }
+.item-table {
+  margin: 0;
+}
 
 .centered-container {
-  margin: 1rem 2rem 1rem 2rem;
-  background-color: #FAFAFA;
-  padding: 1rem 1.5rem;
-  border-radius: 4px;
-  transition: all 0.5s cubic-bezier(0.25,0.8,0.25,1);
-  list-style-type: none;
+  margin: 2rem 0;
   font-size: 0.7em;
 }
 
@@ -215,6 +219,55 @@ body {
   text-align: -webkit-center;
 }
 
+.form-multi-input {
+  margin: 0;
+}
+
+.table-left {
+  margin-right: .5rem;
+}
+
+.table-section {
+  display: flex;
+  padding: 0;
+  border: 0;
+}
+
+.table-row {
+  display: flex;
+  border-bottom: 0.1rem solid #e1e1e1;
+}
+
+tr:first-child {
+  padding: 0 0 1rem 0;
+}
+
+tr {
+  padding: 1rem 0;
+}
+
+#end_auction_at_year {
+  margin-right: .5rem;
+}
+
+#end_auction_at_month {
+  margin: 0 .5rem 2rem .5rem;
+}
+
+#end_auction_at_day {
+  margin: 0 .5rem 2rem .5rem;
+}
+
+#end_auction_at_hour {
+  margin: 0 .5rem 2rem .5rem;
+}
+
+#end_auction_at_minute {
+  margin-left: .5rem;
+}
+
+.half-left {width: -webkit-fill-available;}
+
 @media only screen and (max-width: 960px) {
   .pageGroup {
     width: 80vw;
@@ -223,4 +276,10 @@ body {
   .lbl-group {
     font-size: 36px;
   }
+}
+
+@keyframes fade-out {
+  0%   {opacity: 1;}
+  80% {opacity: 1;}
+  100% {opacity: 0;}
 }

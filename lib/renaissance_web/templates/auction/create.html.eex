@@ -27,10 +27,7 @@
         </div>
         <%= error_tag f, :price %>
       </div>
-    </div>
-
-    <div class="form-section form-section-horizontal">
-      <div class="form-section-half half-left">
+      <div class="form-section-half half-right">
         <%= label f, :end_auction_at, "End Date and Time", class: "lbl-form" %>
         <div class="form-multi-input">
           <%= datetime_select f, :end_auction_at, required: true,
@@ -40,12 +37,11 @@
         <%= error_tag f, :end_auction_at %>
       </div>
     </div>
-  </div>
 
-  <div class="form-section">
+    <div class="form-section">
     <%= submit "Create Auction" %>
   </div>
+  </div>
   <% end %>
-
 </div>
   
