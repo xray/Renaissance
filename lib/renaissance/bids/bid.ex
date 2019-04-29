@@ -2,6 +2,7 @@ defmodule Renaissance.Bid do
   use Ecto.Schema
   import Ecto.Changeset
   alias Renaissance.{Auction, User}
+  alias Renaissance.Helpers.Validate
 
   @required_fields ~w(auction_id bidder_id amount)a
   @optional_fields ~w()a
@@ -19,5 +20,6 @@ defmodule Renaissance.Bid do
     bid
     |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
+    |> Validate.validate_amount(:amount)
   end
 end

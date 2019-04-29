@@ -1,6 +1,7 @@
 defmodule Renaissance.Auctions do
   import Ecto.Query
   alias Renaissance.{Repo, Auction}
+  alias Renaissance.Helpers.Adapt
 
   def create_auction(user_id, params) do
     details =
@@ -12,7 +13,7 @@ defmodule Renaissance.Auctions do
 
     details =
       details
-      |> format_price()
+      |> Adapt.format_amount("price")
       |> Map.put("seller_id", user_id)
 
     Repo.insert(Auction.changeset(%Auction{}, details))
@@ -30,21 +31,7 @@ defmodule Renaissance.Auctions do
     |> Repo.all()
   end
 
-  defp extract_amount(amount) do
-    if is_nil(amount) do
-      "000"
-    else
-      amount
-    end
-  end
-
-  defp format_price(params) do
-    amount =
-      extract_amount(params["price"])
-      |> String.replace(".", "")
-      |> String.to_integer()
-      |> Money.new()
-
-    Map.replace!(params, "price", amount)
+  def closed?(id) do
+    Timex.before?(get(id).end_auction_at, Timex.now())
   end
 end

@@ -8,22 +8,4 @@ defmodule Renaissance.Bids do
     |> preload(:auction)
     |> Repo.get!(id)
   end
-
-  defp extract_amount(amount) do
-    if is_nil(amount) do
-      "000"
-    else
-      amount
-    end
-  end
-
-  defp format_price(params) do
-    amount =
-      extract_amount(params["amount"])
-      |> String.replace(".", "")
-      |> String.to_integer()
-      |> Money.new()
-
-    Map.replace!(params, "amount", amount)
-  end
 end

@@ -1,6 +1,6 @@
 defmodule Renaissance.Test.AuctionsTest do
   use Renaissance.DataCase
-  alias Renaissance.{Auctions, Users, Repo}
+  alias Renaissance.{Auction, Auctions, Users, Repo}
 
   @valid_end %{
     day: "15",
@@ -77,6 +77,30 @@ defmodule Renaissance.Test.AuctionsTest do
       assert second.title == @auction_two["title"]
       assert second.description == @auction_two["description"]
       assert second.price == Money.new(15_00)
+    end
+  end
+
+  describe "closed?/1" do
+    test "false when end time is in the future" do
+      seller_id = fixture(:user).id
+      {:ok, auction_created} = Auctions.create_auction(seller_id, @auction_one)
+      assert Auctions.closed?(auction_created.id) == false
+    end
+
+    test "true when end time is in not the future" do
+      end_time =
+        Timex.add(DateTime.utc_now(), %Timex.Duration{
+          megaseconds: 0,
+          seconds: 1,
+          microseconds: 0
+        })
+
+      end_now_params = %{@auction_one | "end_auction_at" => end_time}
+      end_now_params = Map.put(end_now_params, "seller_id", fixture(:user).id)
+      {:ok, auction} = Repo.insert(Auction.changeset(%Auction{}, end_now_params))
+
+      :timer.sleep(1000)
+      assert Auctions.closed?(auction.id) == true
     end
   end
 end

@@ -29,9 +29,19 @@ defmodule Renaissance.Test.BidTest do
   test "accepts an initial valid auction bid" do
     bidder_id = fixture(:user).id
     auction_id = fixture(:auction, bidder_id).id
-    valid_params = %{bidder_id: bidder_id, auction_id: auction_id, amount: "01.01"}
+    valid_params = %{bidder_id: bidder_id, auction_id: auction_id, amount: 101}
 
     changeset = Bid.changeset(%Bid{}, valid_params)
     assert changeset.valid?
+  end
+
+  test "rejects bid with non-positive amount" do
+    bidder_id = fixture(:user).id
+    auction_id = fixture(:auction, bidder_id).id
+    invalid_params = %{bidder_id: bidder_id, auction_id: auction_id, amount: -100}
+    changeset = Bid.changeset(%Bid{}, invalid_params)
+
+    refute changeset.valid?
+    assert "must be greater than 0" in errors_on(changeset).amount
   end
 end

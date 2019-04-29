@@ -2,6 +2,7 @@ defmodule Renaissance.Auction do
   use Ecto.Schema
   import Ecto.Changeset
   alias Renaissance.User
+  alias Renaissance.Helpers.Validate
 
   @required_fields ~w(title description seller_id price end_auction_at)a
   @optional_fields ~w()a
@@ -21,18 +22,8 @@ defmodule Renaissance.Auction do
     auction
     |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
-    |> validate_price()
+    |> Validate.validate_amount(:price)
     |> validate_date()
-  end
-
-  defp validate_price(changeset) do
-    {_, amount} = Money.Ecto.Amount.Type.dump(get_change(changeset, :price, 0))
-
-    if amount > 0 do
-      changeset
-    else
-      add_error(changeset, :price, "must be greater than 0")
-    end
   end
 
   defp validate_date(changeset) do
