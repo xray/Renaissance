@@ -1,0 +1,24 @@
+sudo: false
+
+language: elixir
+
+elixir:
+  - 1.7
+
+otp_release:
+  - 21.0
+
+env:
+  global:
+    - MIX_ENV=test
+
+services:
+  - postgresql
+
+cache:
+  directories:
+    - _build
+    - deps
+
+script:
+  - mix test
