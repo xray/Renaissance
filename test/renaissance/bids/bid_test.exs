@@ -2,46 +2,59 @@ defmodule Renaissance.Test.BidTest do
   use Renaissance.DataCase
   alias Renaissance.{Auctions, Users, Bid}
 
-  def fixture(:user) do
-    user_params = %{email: "test@suite.com", password: "password"}
-    {:ok, user} = Users.register_user(user_params)
-    user
+  @auction_params %{
+    "title" => "Test Title",
+    "description" => "Test description.",
+    "end_auction_at" => %{
+      "day" => 15,
+      "hour" => 14,
+      "minute" => 3,
+      "month" => 4,
+      "year" => 3019
+    },
+    "price" => "1.00"
+  }
+
+  setup _context do
+    {:ok, seller} = Users.register_user(%{email: "seller@mail.com", password: "password"})
+    {:ok, auction} = Auctions.create_auction(seller.id, @auction_params)
+    {:ok, bidder} = Users.register_user(%{email: "bidder@mail.com", password: "password"})
+
+    [
+      valid_params: %{
+        bidder_id: bidder.id,
+        auction_id: auction.id,
+        amount: 101
+      }
+    ]
   end
 
-  def fixture(:auction, user_id) do
-    auction_params = %{
-      "title" => "Test Title",
-      "description" => "Test description.",
-      "end_auction_at" => %{
-        "day" => 15,
-        "hour" => 14,
-        "minute" => 3,
-        "month" => 4,
-        "year" => 3019
-      },
-      "price" => "1.00"
-    }
-
-    {:ok, auction} = Auctions.create_auction(user_id, auction_params)
-    auction
-  end
-
-  test "accepts an initial valid auction bid" do
-    bidder_id = fixture(:user).id
-    auction_id = fixture(:auction, bidder_id).id
-    valid_params = %{bidder_id: bidder_id, auction_id: auction_id, amount: 101}
-
+  test "accepts an initial valid auction bid", %{valid_params: valid_params} do
     changeset = Bid.changeset(%Bid{}, valid_params)
     assert changeset.valid?
   end
 
-  test "rejects bid with non-positive amount" do
-    bidder_id = fixture(:user).id
-    auction_id = fixture(:auction, bidder_id).id
-    invalid_params = %{bidder_id: bidder_id, auction_id: auction_id, amount: -100}
+  test "rejects bid with non-positive amount", %{valid_params: valid_params} do
+    invalid_params = %{valid_params | amount: -100}
     changeset = Bid.changeset(%Bid{}, invalid_params)
 
     refute changeset.valid?
     assert "must be greater than 0" in errors_on(changeset).amount
+  end
+
+  test "rejects bid with no bidder_id", %{valid_params: valid_params} do
+    invalid_params = %{valid_params | bidder_id: nil}
+    changeset = Bid.changeset(%Bid{}, invalid_params)
+
+    refute changeset.valid?
+    assert "can't be blank" in errors_on(changeset).bidder_id
+  end
+
+  test "rejects bid with no auction_id", %{valid_params: valid_params} do
+    invalid_params = %{valid_params | auction_id: nil}
+    changeset = Bid.changeset(%Bid{}, invalid_params)
+
+    refute changeset.valid?
+    assert "can't be blank" in errors_on(changeset).auction_id
   end
 end

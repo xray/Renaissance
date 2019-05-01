@@ -3,7 +3,6 @@ defmodule Renaissance.Users do
 
   def register_user(params) do
     changeset = User.changeset(%User{}, params)
-
     Repo.insert(changeset)
   end
 

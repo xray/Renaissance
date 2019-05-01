@@ -1,7 +1,7 @@
 defmodule Renaissance.Auction do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Renaissance.User
+  alias Renaissance.{User, Bid}
   alias Renaissance.Helpers.Validate
 
   @required_fields ~w(title description seller_id price end_auction_at)a
@@ -13,6 +13,7 @@ defmodule Renaissance.Auction do
     field :price, Money.Ecto.Amount.Type
     field :end_auction_at, :utc_datetime
     belongs_to :seller, User
+    has_many :bids, Bid
 
     timestamps(type: :utc_datetime)
   end
