@@ -29,6 +29,15 @@ defmodule Renaissance.Bids do
     Enum.map(result.rows, &Repo.load(types, {result.columns, &1})) |> Enum.at(0)
   end
 
+  def get_highest_bid_amount(auction_id) do
+    query =
+      from b in "bids",
+        select: b.amount,
+        where: b.auction_id == ^auction_id
+
+    Repo.aggregate(query, :max, :amount)
+  end
+
   def get(id) do
     Bid
     |> preload(:bidder)

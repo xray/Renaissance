@@ -40,7 +40,7 @@ defmodule RenaissanceWeb.AuctionController do
   def show(conn, %{"id" => id}) do
     if Auth.signed_in?(conn) do
       {id, _} = Integer.parse(id)
-      render(conn, "show.html", %{auction: Auctions.get(id)})
+      render(conn, "show.html", %{auction: Auctions.get!(id)})
     else
       redirect(conn, to: Routes.login_path(conn, :login))
     end

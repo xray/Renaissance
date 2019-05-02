@@ -22,5 +22,6 @@ defmodule Renaissance.Bid do
     |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
     |> Constraint.amount_constraint(:amount)
+    |> Constraint.bidder_constraint(:bidder_id)
   end
 end

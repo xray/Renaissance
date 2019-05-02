@@ -70,4 +70,12 @@ defmodule Renaissance.Test.BidTest do
     refute changeset.valid?
     assert "can't be blank" in errors_on(changeset).auction_id
   end
+
+  test "rejects bid where the bidder is the seller", %{params: valid_params, seller_id: seller_id} do
+    invalid_params = %{valid_params | bidder_id: seller_id}
+    changeset = Bid.changeset(%Bid{}, invalid_params)
+
+    refute changeset.valid?
+    assert "can't bid on auction item that you're selling" in errors_on(changeset).bidder_id
+  end
 end
