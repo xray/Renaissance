@@ -56,13 +56,13 @@ defmodule Renaissance.Test.AuctionsTest do
     end
   end
 
-  describe "closed?/1" do
-    test "false when end time is in the future", %{user_id: seller_id} do
+  describe "open?/1" do
+    test "true when end time is in the future", %{user_id: seller_id} do
       {:ok, auction_created} = Auctions.create_auction(seller_id, @auction_one)
-      assert Auctions.closed?(auction_created.id) == false
+      assert Auctions.open?(auction_created.id) == true
     end
 
-    test "true when end time is in not the future", %{user_id: seller_id} do
+    test "false when end time is in not the future", %{user_id: seller_id} do
       end_time =
         Timex.add(DateTime.utc_now(), %Timex.Duration{
           megaseconds: 0,
@@ -75,7 +75,7 @@ defmodule Renaissance.Test.AuctionsTest do
       {:ok, auction} = Repo.insert(Auction.changeset(%Auction{}, end_now_params))
 
       :timer.sleep(1000)
-      assert Auctions.closed?(auction.id) == true
+      assert Auctions.open?(auction.id) == false
     end
   end
 end
