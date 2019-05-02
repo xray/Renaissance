@@ -2,7 +2,7 @@ defmodule Renaissance.Auction do
   use Ecto.Schema
   import Ecto.Changeset
   alias Renaissance.{User, Bid}
-  alias Renaissance.Helpers.Validate
+  alias Renaissance.Helpers.Constraint
 
   @required_fields ~w(title description seller_id price end_auction_at)a
   @optional_fields ~w()a
@@ -23,14 +23,14 @@ defmodule Renaissance.Auction do
     auction
     |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
-    |> Validate.validate_amount(:price)
-    |> validate_date()
+    |> Constraint.amount_constraint(:price)
+    |> end_datetime_constraint()
   end
 
-  defp validate_date(changeset) do
-    auction_complete = get_change(changeset, :end_auction_at)
+  defp end_datetime_constraint(changeset) do
+    end_at = get_change(changeset, :end_auction_at)
 
-    if DateTime.compare(DateTime.utc_now(), auction_complete || DateTime.utc_now()) == :lt do
+    if DateTime.compare(DateTime.utc_now(), end_at || DateTime.utc_now()) == :lt do
       changeset
     else
       add_error(changeset, :end_auction_at, "should be in the future")

@@ -25,13 +25,18 @@ defmodule Renaissance.Auctions do
     |> Repo.get!(id)
   end
 
+  def get_starting_price(id) do
+    auction = Repo.get(Auction, id)
+    if is_nil(auction), do: 0, else: auction.price
+  end
+
   def get_all() do
     Auction
     |> preload(:seller)
     |> Repo.all()
   end
 
-  def closed?(id) do
-    Timex.before?(get(id).end_auction_at, Timex.now())
+  def open?(id) do
+    Timex.after?(get(id).end_auction_at, Timex.now())
   end
 end

@@ -21,7 +21,7 @@ defmodule Renaissance.Test.BidsTest do
     {:ok, bidder} = Users.register_user(%{email: "bidder@mail.com", password: "password"})
 
     [
-      valid_params: %{
+      params: %{
         "bidder_id" => bidder.id,
         "auction_id" => auction.id,
         "amount" => "1.01"
@@ -30,7 +30,7 @@ defmodule Renaissance.Test.BidsTest do
   end
 
   describe "place_bid/1" do
-    test "stores a valid bid in the db", %{valid_params: valid_params} do
+    test "places a valid bid", %{params: valid_params} do
       {:ok, new_bid} = Bids.place_bid(valid_params)
 
       assert new_bid.bidder_id == valid_params["bidder_id"]
@@ -38,22 +38,39 @@ defmodule Renaissance.Test.BidsTest do
       assert Money.compare(new_bid.amount, Money.new(1_01)) == 0
     end
 
-    test "does not store when invalid bidder id", %{valid_params: valid_params} do
+    test "does not place when invalid bidder id", %{params: valid_params} do
       exception =
         assert_raise Ecto.ConstraintError, fn ->
-          Bids.place_bid(%{valid_params | "bidder_id" => 0})
+          Bids.place_bid(Map.replace!(valid_params, "bidder_id", 0))
         end
 
       assert exception.constraint == "bids_bidder_id_fkey"
     end
 
-    test "does not store when invalid auction id", %{valid_params: valid_params} do
+    test "does not place when invalid auction id", %{params: valid_params} do
       exception =
         assert_raise Ecto.ConstraintError, fn ->
-          Bids.place_bid(%{valid_params | "auction_id" => 0})
+          Bids.place_bid(Map.replace!(valid_params, "auction_id", 0))
         end
 
       assert exception.constraint == "bids_auction_id_fkey"
+    end
+  end
+
+  describe "get_highest_bid/1" do
+    test "returns nil if no bids exist for the given auction", %{params: valid_params} do
+      result = Bids.get_highest_bid(valid_params["auction_id"])
+      assert is_nil(result)
+    end
+
+    test "details the highest existing bid for the given auction", %{params: valid_params} do
+      Bids.place_bid(Map.replace!(valid_params, "amount", "10.05"))
+      Bids.place_bid(Map.replace!(valid_params, "amount", "10.00"))
+
+      result = Bids.get_highest_bid(valid_params["auction_id"])
+
+      assert Money.compare(result.amount, Money.new(10_05)) == 0
+      assert result.bidder_id == valid_params["bidder_id"]
     end
   end
 end

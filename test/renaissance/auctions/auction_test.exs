@@ -59,7 +59,7 @@ defmodule Renaissance.Test.AuctionTest do
       changeset = Auction.changeset(%Auction{}, invalid_params)
 
       refute changeset.valid?
-      assert "must be greater than 0" in errors_on(changeset).price
+      assert "must be greater than $0.00" in errors_on(changeset).price
     end
 
     test "requires end date" do
