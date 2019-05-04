@@ -1,40 +1,49 @@
 defmodule Renaissance.Test.UsersTest do
   use Renaissance.DataCase
-  require Ecto.Query
-  alias Renaissance.Users
-  alias Renaissance.Repo
+  alias Renaissance.{Repo, User, Users}
 
-  @valid_attrs %{email: "mail@mail.com", password: "password"}
+  @attrs %{email: "mail@mail.com", password: "password"}
 
-  describe "users" do
+  describe "register_user/2" do
     test "stores valid" do
-      {:ok, user} = Users.register_user(@valid_attrs)
+      {:ok, user} = Users.register_user(@attrs)
 
-      assert user.email == @valid_attrs.email
-      assert user.password_hash != @valid_attrs.password
+      assert Repo.exists?(User) == true
+      assert user.email == @attrs.email
+      assert user.password_hash != @attrs.password
     end
 
     test "does not store invalid" do
       Users.register_user(%{email: "mail@mail.com", password: nil})
+      assert Repo.exists?(User) == false
+    end
+  end
 
-      count = Repo.aggregate(Ecto.Query.from(p in "users"), :count, :id)
-      assert 0 == count
+  describe "exists?/1" do
+    test "true when user with given id" do
+      {:ok, user} = Users.register_user(@attrs)
+      assert Users.exists?(user.id) == true
     end
 
+    test "false when no user with given id" do
+      assert Users.exists?(0) == false
+    end
+  end
+
+  describe "verify_login/2" do
     test "verifies login when correct password for known user" do
-      Users.register_user(@valid_attrs)
-      assert Users.verify_login(@valid_attrs.email, @valid_attrs.password)
+      Users.register_user(@attrs)
+      assert Users.verify_login(@attrs.email, @attrs.password)
     end
 
     test "rejects login when invalid password for known user" do
-      Users.register_user(@valid_attrs)
+      Users.register_user(@attrs)
 
-      assert {:error, "invalid password"} ==
-               Users.verify_login(@valid_attrs.email, "wrong_password")
+      assert {:error, "invalid password"} == Users.verify_login(@attrs.email, "wrong_password")
     end
 
     test "rejects login unknown user" do
-      Users.register_user(@valid_attrs)
+      Users.register_user(@attrs)
 
       assert {:error, "invalid user-identifier"} ==
                Users.verify_login("unknown@mail.com", "wrong_password")

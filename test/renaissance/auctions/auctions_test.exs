@@ -1,6 +1,6 @@
 defmodule Renaissance.Test.AuctionsTest do
   use Renaissance.DataCase
-  alias Renaissance.{Auction, Auctions, Users, Repo}
+  alias Renaissance.{Auction, Auctions, Repo, Users}
 
   @valid_end %{
     day: "15",
@@ -42,17 +42,25 @@ defmodule Renaissance.Test.AuctionsTest do
     test "does not store when title is blank", %{user_id: seller_id} do
       invalid_params = %{@auction_two | "title" => ""}
       assert {:error, _} = Auctions.create_auction(seller_id, invalid_params)
+      assert Repo.exists?(Auction) == false
     end
 
     test "does not store when invalid seller_id" do
-      invalid_seller_id = 0
+      {:error, changeset} = Auctions.create_auction(0, @auction_two)
 
-      exception =
-        assert_raise Ecto.ConstraintError, fn ->
-          Auctions.create_auction(invalid_seller_id, @auction_two)
-        end
+      assert "does not exist" in errors_on(changeset).seller_id
+      assert Repo.exists?(Auction) == false
+    end
+  end
 
-      assert exception.message =~ "foreign_key_constraint"
+  describe "exists?/1" do
+    test "true when auction with given id", %{user_id: seller_id} do
+      {:ok, auction} = Auctions.create_auction(seller_id, @auction_one)
+      assert Auctions.exists?(auction.id) == true
+    end
+
+    test "false when no auction with given id" do
+      assert Auctions.exists?(0) == false
     end
   end
 
@@ -60,6 +68,10 @@ defmodule Renaissance.Test.AuctionsTest do
     test "true when end time is in the future", %{user_id: seller_id} do
       {:ok, auction_created} = Auctions.create_auction(seller_id, @auction_one)
       assert Auctions.open?(auction_created.id) == true
+    end
+
+    test "nil when auction does not exist" do
+      assert is_nil(Auctions.open?(0)) == true
     end
 
     test "false when end time is in not the future", %{user_id: seller_id} do
@@ -70,8 +82,10 @@ defmodule Renaissance.Test.AuctionsTest do
           microseconds: 0
         })
 
-      end_now_params = %{@auction_one | "end_auction_at" => end_time}
-      end_now_params = Map.put(end_now_params, "seller_id", seller_id)
+      end_now_params =
+        %{@auction_one | "end_auction_at" => end_time}
+        |> Map.put("seller_id", seller_id)
+
       {:ok, auction} = Repo.insert(Auction.changeset(%Auction{}, end_now_params))
 
       :timer.sleep(1000)

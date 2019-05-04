@@ -15,8 +15,8 @@ defmodule RenaissanceWeb.RegisterController do
     end
   end
 
-  def create(conn, params) do
-    case Users.register_user(params["user"]) do
+  def create(conn, %{"user" => user_params}) do
+    case Users.register_user(user_params) do
       {:ok, _user} ->
         conn
         |> put_flash(:info, "You have successfully signed up!")

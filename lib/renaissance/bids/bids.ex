@@ -6,7 +6,12 @@ defmodule Renaissance.Bids do
   def place_bid(params) do
     params = Adapt.format_amount(params, "amount")
 
-    Repo.insert(Bid.changeset(%Bid{}, params))
+    Bid.changeset(%Bid{}, params)
+    |> Repo.insert()
+  end
+
+  def exists?(id) do
+    Repo.exists?(from b in Bid, where: b.id == ^id)
   end
 
   def get_highest_bid(auction_id) do
@@ -26,7 +31,8 @@ defmodule Renaissance.Bids do
       created_at: :utc_datetime
     }
 
-    Enum.map(result.rows, &Repo.load(types, {result.columns, &1})) |> Enum.at(0)
+    Enum.map(result.rows, &Repo.load(types, {result.columns, &1}))
+    |> Enum.at(0)
   end
 
   def get_highest_bid_amount(auction_id) do
@@ -38,7 +44,7 @@ defmodule Renaissance.Bids do
     Repo.aggregate(query, :max, :amount)
   end
 
-  def get(id) do
+  def get!(id) do
     Bid
     |> preload(:bidder)
     |> preload(:auction)

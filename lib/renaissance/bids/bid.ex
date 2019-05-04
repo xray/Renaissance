@@ -21,7 +21,10 @@ defmodule Renaissance.Bid do
     bid
     |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
+    |> foreign_key_constraint(:bidder_id, name: :bids_bidder_id_fkey)
+    |> foreign_key_constraint(:auction_id, name: :bids_auction_id_fkey)
     |> Constraint.amount_constraint(:amount)
     |> Constraint.bidder_constraint(:bidder_id)
+    |> Constraint.open_constraint(:amount)
   end
 end

@@ -1,6 +1,6 @@
 defmodule Renaissance.Test.BidsTest do
   use Renaissance.DataCase
-  alias Renaissance.{Auctions, Users, Bids}
+  alias Renaissance.{Auctions, Bid, Bids, Users, Repo}
 
   @auction_params %{
     "title" => "Test Title",
@@ -39,21 +39,28 @@ defmodule Renaissance.Test.BidsTest do
     end
 
     test "does not place when invalid bidder id", %{params: valid_params} do
-      exception =
-        assert_raise Ecto.ConstraintError, fn ->
-          Bids.place_bid(Map.replace!(valid_params, "bidder_id", 0))
-        end
+      {:error, changeset} = Bids.place_bid(Map.replace!(valid_params, "bidder_id", 0))
 
-      assert exception.constraint == "bids_bidder_id_fkey"
+      assert "does not exist" in errors_on(changeset).bidder_id
+      assert Repo.exists?(Bid) == false
     end
 
     test "does not place when invalid auction id", %{params: valid_params} do
-      exception =
-        assert_raise Ecto.ConstraintError, fn ->
-          Bids.place_bid(Map.replace!(valid_params, "auction_id", 0))
-        end
+      {:error, changeset} = Bids.place_bid(Map.replace!(valid_params, "auction_id", 0))
 
-      assert exception.constraint == "bids_auction_id_fkey"
+      assert "does not exist" in errors_on(changeset).auction_id
+      assert Repo.exists?(Bid) == false
+    end
+  end
+
+  describe "exists?/1" do
+    test "true when bid with given id", %{params: valid_params} do
+      {:ok, bid} = Bids.place_bid(valid_params)
+      assert Bids.exists?(bid.id) == true
+    end
+
+    test "false when no bid with given id" do
+      assert Bids.exists?(0) == false
     end
   end
 

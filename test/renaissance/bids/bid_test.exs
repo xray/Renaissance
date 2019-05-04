@@ -71,11 +71,34 @@ defmodule Renaissance.Test.BidTest do
     assert "can't be blank" in errors_on(changeset).auction_id
   end
 
-  test "rejects bid where the bidder is the seller", %{params: valid_params, seller_id: seller_id} do
+  test "rejects bid when bidder is seller", %{params: valid_params, seller_id: seller_id} do
     invalid_params = %{valid_params | bidder_id: seller_id}
     changeset = Bid.changeset(%Bid{}, invalid_params)
 
     refute changeset.valid?
     assert "can't bid on auction item that you're selling" in errors_on(changeset).bidder_id
+  end
+
+  test "false when end time is not in the future", %{params: valid_params, seller_id: seller_id} do
+    end_time =
+      Timex.add(DateTime.utc_now(), %Timex.Duration{
+        megaseconds: 0,
+        seconds: 1,
+        microseconds: 0
+      })
+
+    closed_params =
+      @auction_params
+      |> Map.put("end_auction_at", end_time)
+      |> Map.put("seller_id", seller_id)
+
+    {:ok, closed_auction} = Auctions.create_auction(seller_id, closed_params)
+
+    :timer.sleep(1000)
+    params = %{valid_params | auction_id: closed_auction.id}
+    changeset = Bid.changeset(%Bid{}, params)
+
+    refute changeset.valid?
+    assert "auction is not open" in errors_on(changeset).amount
   end
 end

@@ -4,19 +4,17 @@ defmodule Renaissance.Auctions do
   alias Renaissance.Helpers.{Adapt, Compare}
 
   def create_auction(user_id, params) do
-    details =
-      if Map.has_key?(params, "auction") do
-        params["auction"]
-      else
-        params
-      end
-
-    details =
-      details
+    params =
+      params
       |> Adapt.format_amount("price")
       |> Map.put("seller_id", user_id)
 
-    Repo.insert(Auction.changeset(%Auction{}, details))
+    Auction.changeset(%Auction{}, params)
+    |> Repo.insert()
+  end
+
+  def exists?(id) do
+    Repo.exists?(from a in Auction, where: a.id == ^id)
   end
 
   def get!(id) do
@@ -26,20 +24,18 @@ defmodule Renaissance.Auctions do
   end
 
   def get_seller_id(id) do
-    auction = Repo.get(Auction, id)
-    if is_nil(auction), do: 0, else: auction.seller_id
+    if exists?(id), do: get!(id).seller_id
   end
 
   def get_starting_amount(id) do
-    auction = Repo.get(Auction, id)
-    if is_nil(auction), do: 0, else: auction.price
+    if exists?(id), do: get!(id).price
   end
 
   def get_current_amount(id) do
-    starting_amount = get_starting_amount(id)
-    current_amount = Bids.get_highest_bid_amount(id)
+    larger =
+      Bids.get_highest_bid_amount(id)
+      |> Compare.money_max(get_starting_amount(id))
 
-    larger = Compare.money_max(starting_amount, current_amount)
     if is_nil(larger), do: Money.new(0), else: larger
   end
 
@@ -50,6 +46,6 @@ defmodule Renaissance.Auctions do
   end
 
   def open?(id) do
-    Timex.after?(get!(id).end_auction_at, Timex.now())
+    if exists?(id), do: get!(id).end_auction_at |> Timex.after?(Timex.now())
   end
 end

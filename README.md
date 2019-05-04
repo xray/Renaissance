@@ -1,8 +1,8 @@
 # Renaissance
 Auctions web app built with Elixir framework Phoenix
+[![Build Status](https://travis-ci.com/xray/Renaissance.svg?branch=bid-backend)](https://travis-ci.com/rstein66/Renaissance)  
 
-> :warning: WIP 
-[![Build Status](https://travis-ci.com/rstein66/Renaissance.svg?branch=master)](https://travis-ci.com/rstein66/Renaissance)  
+> :warning: WIP  
 
 Greenfield web app that is similar to the basic functionality of eBay.
 
