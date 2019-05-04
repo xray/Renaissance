@@ -49,8 +49,7 @@ defmodule Renaissance.MixProject do
       {:money, "~> 1.4"},
       {:phoenix_live_view, github: "phoenixframework/phoenix_live_view"},
       {:calendar, "~> 0.17.5"},
-      {:timex, "~> 3.1"},
-      {:excoveralls, "~> 0.11.0"}
+      {:timex, "~> 3.1"}
     ]
   end
 
