@@ -79,5 +79,25 @@ defmodule Renaissance.Test.BidsTest do
       assert Money.compare(result.amount, Money.new(10_05)) == 0
       assert result.bidder_id == valid_params["bidder_id"]
     end
+
+    test "user can place back-to-back bids", %{params: valid_params} do
+      auction_id = valid_params["auction_id"]
+
+      Bids.place_bid(Map.replace!(valid_params, "amount", "8.01"))
+
+      result_one = Bids.get_highest_bid(auction_id)
+      assert Money.compare(result_one.amount, Money.new(8_01)) == 0
+
+      Bids.place_bid(Map.replace!(valid_params, "amount", "10.05"))
+
+      result_two = Bids.get_highest_bid(auction_id)
+      assert Money.compare(result_two.amount, Money.new(10_05)) == 0
+
+      Bids.place_bid(Map.replace!(valid_params, "amount", "10.00"))
+      Bids.place_bid(Map.replace!(valid_params, "amount", "12.70"))
+
+      result_three = Bids.get_highest_bid(auction_id)
+      assert Money.compare(result_three.amount, Money.new(12_70)) == 0
+    end
   end
 end
