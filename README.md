@@ -1,6 +1,5 @@
 # Renaissance
 Auctions web app built with Elixir framework Phoenix
-[![Build Status](https://travis-ci.com/xray/Renaissance.svg?branch=bid-backend)](https://travis-ci.com/rstein66/Renaissance)  
 
 > :warning: WIP  
 
