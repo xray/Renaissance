@@ -1,13 +1,13 @@
-defmodule Renaissance.Helpers.Constraint do
+defmodule Renaissance.Helpers.Validators do
   import Ecto.Changeset
-  alias Renaissance.Helpers.Adapt
+  alias Renaissance.Helpers
   alias Renaissance.Auctions
 
-  def amount_constraint(changeset, field) do
+  def validate_amount(changeset, field) do
     auction_id = get_change(changeset, :auction_id, 0)
 
-    proposed = get_change(changeset, field, 0) |> Adapt.money_value()
-    current = Auctions.get_current_amount(auction_id) |> Adapt.money_value()
+    proposed = get_change(changeset, field, 0) |> Helpers.Money.to_value()
+    current = Auctions.get_current_amount(auction_id) |> Helpers.Money.to_value()
 
     if proposed > current do
       changeset
@@ -17,7 +17,7 @@ defmodule Renaissance.Helpers.Constraint do
     end
   end
 
-  def bidder_constraint(changeset, field) do
+  def validate_bidder(changeset, field) do
     bidder_id = get_change(changeset, field)
     auction_id = get_change(changeset, :auction_id, 0)
     seller_id = Auctions.get_seller_id(auction_id)
@@ -30,7 +30,7 @@ defmodule Renaissance.Helpers.Constraint do
     end
   end
 
-  def open_constraint(changeset, field) do
+  def validate_open(changeset, field) do
     auction_id = get_change(changeset, :auction_id, 0)
 
     if Auctions.open?(auction_id) in [nil, true] do

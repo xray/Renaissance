@@ -42,14 +42,14 @@ defmodule Renaissance.Test.BidsTest do
       {:error, changeset} = Bids.place_bid(Map.replace!(valid_params, "bidder_id", 0))
 
       assert "does not exist" in errors_on(changeset).bidder_id
-      assert Repo.exists?(Bid) == false
+      refute Repo.exists?(Bid)
     end
 
     test "does not place when invalid auction id", %{params: valid_params} do
       {:error, changeset} = Bids.place_bid(Map.replace!(valid_params, "auction_id", 0))
 
       assert "does not exist" in errors_on(changeset).auction_id
-      assert Repo.exists?(Bid) == false
+      refute Repo.exists?(Bid)
     end
   end
 
@@ -60,7 +60,7 @@ defmodule Renaissance.Test.BidsTest do
     end
 
     test "false when no bid with given id" do
-      assert Bids.exists?(0) == false
+      refute Bids.exists?(0)
     end
   end
 

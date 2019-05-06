@@ -1,12 +1,12 @@
 defmodule Renaissance.Auctions do
   import Ecto.Query
   alias Renaissance.{Auction, Repo, Bids}
-  alias Renaissance.Helpers.{Adapt, Compare}
+  alias Renaissance.Helpers
 
   def create_auction(user_id, params) do
     params =
       params
-      |> Adapt.format_amount("price")
+      |> Helpers.Money.to_amount("price")
       |> Map.put("seller_id", user_id)
 
     Auction.changeset(%Auction{}, params)
@@ -34,7 +34,7 @@ defmodule Renaissance.Auctions do
   def get_current_amount(id) do
     larger =
       Bids.get_highest_bid_amount(id)
-      |> Compare.money_max(get_starting_amount(id))
+      |> Helpers.Money.money_max(get_starting_amount(id))
 
     if is_nil(larger), do: Money.new(0), else: larger
   end

@@ -80,6 +80,7 @@ defmodule Renaissance.Test.BidTest do
   end
 
   test "false when end time is not in the future", %{params: valid_params, seller_id: seller_id} do
+    # TODO clean up description
     end_time =
       Timex.add(DateTime.utc_now(), %Timex.Duration{
         megaseconds: 0,

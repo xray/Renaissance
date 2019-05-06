@@ -1,10 +1,10 @@
 defmodule Renaissance.Bids do
   import Ecto.Query
   alias Renaissance.{Repo, Bid}
-  alias Renaissance.Helpers.Adapt
+  alias Renaissance.Helpers
 
   def place_bid(params) do
-    params = Adapt.format_amount(params, "amount")
+    params = Helpers.Money.to_amount(params, "amount")
 
     Bid.changeset(%Bid{}, params)
     |> Repo.insert()
