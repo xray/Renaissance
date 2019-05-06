@@ -8,12 +8,15 @@ defmodule RenaissanceWeb.Helpers.Auth do
   end
 
   def current_user(conn) do
-    case Plug.Conn.get_session(conn, :current_user_id) do
-      nil ->
-        nil
+    Plug.Conn.get_session(conn, :current_user_id)
+    |> return_user()
+  end
 
-      id ->
-        Users.get(id)
-    end
+  defp return_user(nil) do
+    nil
+  end
+
+  defp return_user(id) do
+    Users.get(id)
   end
 end
