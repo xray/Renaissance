@@ -42,36 +42,36 @@ defmodule Renaissance.Test.AuctionsTest do
     test "does not store when title is blank", %{user_id: seller_id} do
       invalid_params = %{@auction_two | "title" => ""}
       assert {:error, _} = Auctions.create_auction(seller_id, invalid_params)
-      assert Repo.exists?(Auction) == false
+      refute Repo.exists?(Auction)
     end
 
     test "does not store when invalid seller_id" do
       {:error, changeset} = Auctions.create_auction(0, @auction_two)
 
       assert "does not exist" in errors_on(changeset).seller_id
-      assert Repo.exists?(Auction) == false
+      refute Repo.exists?(Auction)
     end
   end
 
   describe "exists?/1" do
     test "true when auction with given id", %{user_id: seller_id} do
       {:ok, auction} = Auctions.create_auction(seller_id, @auction_one)
-      assert Auctions.exists?(auction.id) == true
+      assert Auctions.exists?(auction.id)
     end
 
     test "false when no auction with given id" do
-      assert Auctions.exists?(0) == false
+      refute Auctions.exists?(0)
     end
   end
 
   describe "open?/1" do
     test "true when end time is in the future", %{user_id: seller_id} do
       {:ok, auction_created} = Auctions.create_auction(seller_id, @auction_one)
-      assert Auctions.open?(auction_created.id) == true
+      assert Auctions.open?(auction_created.id)
     end
 
     test "nil when auction does not exist" do
-      assert is_nil(Auctions.open?(0)) == true
+      assert is_nil(Auctions.open?(0))
     end
 
     test "false when end time is in not the future", %{user_id: seller_id} do
@@ -89,7 +89,7 @@ defmodule Renaissance.Test.AuctionsTest do
       {:ok, auction} = Repo.insert(Auction.changeset(%Auction{}, end_now_params))
 
       :timer.sleep(1000)
-      assert Auctions.open?(auction.id) == false
+      refute Auctions.open?(auction.id)
     end
   end
 end

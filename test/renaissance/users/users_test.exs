@@ -8,25 +8,25 @@ defmodule Renaissance.Test.UsersTest do
     test "stores valid" do
       {:ok, user} = Users.register_user(@attrs)
 
-      assert Repo.exists?(User) == true
+      assert Repo.exists?(User)
       assert user.email == @attrs.email
       assert user.password_hash != @attrs.password
     end
 
     test "does not store invalid" do
       Users.register_user(%{email: "mail@mail.com", password: nil})
-      assert Repo.exists?(User) == false
+      refute Repo.exists?(User)
     end
   end
 
   describe "exists?/1" do
     test "true when user with given id" do
       {:ok, user} = Users.register_user(@attrs)
-      assert Users.exists?(user.id) == true
+      assert Users.exists?(user.id)
     end
 
     test "false when no user with given id" do
-      assert Users.exists?(0) == false
+      refute Users.exists?(0)
     end
   end
 
