@@ -108,7 +108,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
       end
     end
 
-    test "GET /auctions/:id when the user is the seller the description is edittable", %{
+    test "GET /auctions/:id when the user is the seller the description is editable", %{
       conn: conn
     } do
       conn = conn |> post("/auctions", @auction_one_params)
@@ -119,7 +119,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
                ~s(type="text" value="#{@auction_one_params.description}")
     end
 
-    test "PUT /auction/:id/update", %{conn: conn} do
+    test "PUT /auction/:id for description", %{conn: conn} do
       conn = conn |> post("/auctions", @auction_one_params)
       auction_id = Repo.get_by(Auction, title: @auction_one_params.title).id
       conn = get(conn, "/auctions/#{auction_id}")
@@ -129,6 +129,31 @@ defmodule RenaissanceWeb.AuctionControllerTest do
       conn =
         conn
         |> put("/auctions/#{auction_id}", %{description: updated_description})
+
+      assert get_flash(conn, :info) == "Auction Updated!"
+    end
+
+    test "GET /auctions/:id when the user is the seller the title is editable", %{
+      conn: conn
+    } do
+      conn = conn |> post("/auctions", @auction_one_params)
+      auction_one_id = Repo.get_by(Auction, title: @auction_one_params.title).id
+      conn = get(conn, "/auctions/#{auction_one_id}")
+
+      assert html_response(conn, 200) =~
+               ~s(type="text" value="#{@auction_one_params.title}")
+    end
+
+    test "PUT /auction/:id for title", %{conn: conn} do
+      conn = conn |> post("/auctions", @auction_one_params)
+      auction_id = Repo.get_by(Auction, title: @auction_one_params.title).id
+      conn = get(conn, "/auctions/#{auction_id}")
+
+      updated_title = "Updated " <> @auction_one_params.title
+
+      conn =
+        conn
+        |> put("/auctions/#{auction_id}", %{title: updated_title})
 
       assert get_flash(conn, :info) == "Auction Updated!"
     end

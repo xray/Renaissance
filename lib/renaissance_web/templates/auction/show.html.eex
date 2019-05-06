@@ -1,11 +1,15 @@
 <div class="pageContent">
   <div class="pageGroup show-auction">
-    <h1 class="lbl-group"><%= @auction.title %></h1>
-    <div class="content-text show-auction">
       <%= if @user.email != @auction.seller.email do %>
+        <h1 class="lbl-group"><%= @auction.title %></h1>
+        <div class="content-text show-auction">
         <i><%= @auction.description %></i>
       <% else %>
         <%= form_for @changeset, Routes.auction_path(@conn, :update, @auction), [method: :put], fn f -> %>
+        <%= text_input f, :title, class: "lbl-group",
+        value: @auction.title, required: true %>
+        <%= error_tag f, :title %>
+        <div class="content-text show-auction">
           <%= text_input f, :description, class: "txt-form",
           value: @auction.description, required: true %>
           <%= error_tag f, :description %>
