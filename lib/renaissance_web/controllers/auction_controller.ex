@@ -40,9 +40,33 @@ defmodule RenaissanceWeb.AuctionController do
   def show(conn, %{"id" => id}) do
     if Auth.signed_in?(conn) do
       {id, _} = Integer.parse(id)
-      render(conn, "show.html", %{auction: Auctions.get(id)})
+
+      render(conn, "show.html", %{
+        auction: Auctions.get(id),
+        user: Auth.current_user(conn),
+        changeset: conn
+      })
     else
       redirect(conn, to: Routes.login_path(conn, :login))
+    end
+  end
+
+  def update_description(conn, params) do
+    id = String.to_integer(params["id"])
+    response = Auctions.update_description(id, params)
+
+    case response do
+      {:ok, _auction} ->
+        conn
+        |> put_flash(:info, "Auction Updated!")
+        |> render("show.html", %{
+          auction: Auctions.get(id),
+          user: Auth.current_user(conn),
+          changeset: conn
+        })
+
+      {:error, changeset} ->
+        render(conn, "show.html", changeset: changeset)
     end
   end
 end

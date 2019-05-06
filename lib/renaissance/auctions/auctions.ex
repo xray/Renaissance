@@ -1,5 +1,5 @@
 defmodule Renaissance.Auctions do
-  import Ecto.Query
+  import Ecto.{Query, Changeset}
   alias Renaissance.{Repo, Auction}
 
   def create_auction(user_id, params) do
@@ -16,6 +16,13 @@ defmodule Renaissance.Auctions do
       |> Map.put("seller_id", user_id)
 
     Repo.insert(Auction.changeset(%Auction{}, details))
+  end
+
+  def update_description(auction_id, params) do
+    Auction
+    |> Repo.get!(auction_id)
+    |> change(description: params["description"])
+    |> Repo.update()
   end
 
   def get(id) do
