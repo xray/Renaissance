@@ -16,9 +16,9 @@ defmodule Renaissance.Test.BidTest do
   }
 
   setup _context do
-    {:ok, seller} = Users.register_user(%{email: "seller@mail.com", password: "password"})
-    {:ok, auction} = Auctions.create_auction(seller.id, @auction_params)
-    {:ok, bidder} = Users.register_user(%{email: "bidder@mail.com", password: "password"})
+    {:ok, seller} = Users.insert(%{email: "seller@mail.com", password: "password"})
+    {:ok, auction} = Auctions.insert(seller.id, @auction_params)
+    {:ok, bidder} = Users.insert(%{email: "bidder@mail.com", password: "password"})
 
     [
       seller_id: seller.id,
@@ -93,7 +93,7 @@ defmodule Renaissance.Test.BidTest do
       |> Map.put("end_auction_at", end_time)
       |> Map.put("seller_id", seller_id)
 
-    {:ok, closed_auction} = Auctions.create_auction(seller_id, closed_params)
+    {:ok, closed_auction} = Auctions.insert(seller_id, closed_params)
 
     :timer.sleep(1000)
     params = %{valid_params | auction_id: closed_auction.id}

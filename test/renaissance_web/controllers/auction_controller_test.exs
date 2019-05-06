@@ -34,7 +34,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
     end
 
     test "GET /auctions displays all auctions when signed in" do
-      {:ok, user} = Users.register_user(@valid_user_params)
+      {:ok, user} = Users.insert(@valid_user_params)
 
       conn =
         build_conn()
@@ -62,7 +62,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
     end
 
     test "GET /auctions/new is accessible when logged in" do
-      {:ok, user} = Users.register_user(@valid_user_params)
+      {:ok, user} = Users.insert(@valid_user_params)
 
       conn =
         build_conn()
@@ -75,7 +75,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
 
   describe "create/2" do
     setup %{conn: conn} do
-      {:ok, user} = Users.register_user(@valid_user_params)
+      {:ok, user} = Users.insert(@valid_user_params)
       {:ok, conn: Test.init_test_session(conn, current_user_id: user.id, current_user: user)}
     end
 
@@ -96,7 +96,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
   describe "show/2" do
     setup %{conn: conn} do
       user_params = %{email: "mail@mail.com", password: "password"}
-      {:ok, user} = Users.register_user(user_params)
+      {:ok, user} = Users.insert(user_params)
       {:ok, conn: Test.init_test_session(conn, current_user_id: user.id)}
     end
 

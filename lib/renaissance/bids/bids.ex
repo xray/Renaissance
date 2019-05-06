@@ -3,7 +3,7 @@ defmodule Renaissance.Bids do
   alias Renaissance.{Repo, Bid}
   alias Renaissance.Helpers
 
-  def place_bid(params) do
+  def insert(params) do
     params = Helpers.Money.to_amount(params, "amount")
 
     Bid.changeset(%Bid{}, params)

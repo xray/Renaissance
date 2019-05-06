@@ -24,7 +24,7 @@ defmodule RenaissanceWeb.AuctionController do
     response =
       conn
       |> get_session(:current_user_id)
-      |> Auctions.create_auction(params)
+      |> Auctions.insert(params)
 
     case response do
       {:ok, _user} ->

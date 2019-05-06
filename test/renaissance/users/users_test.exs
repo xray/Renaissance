@@ -4,9 +4,9 @@ defmodule Renaissance.Test.UsersTest do
 
   @attrs %{email: "mail@mail.com", password: "password"}
 
-  describe "register_user/2" do
+  describe "insert/2" do
     test "stores valid" do
-      {:ok, user} = Users.register_user(@attrs)
+      {:ok, user} = Users.insert(@attrs)
 
       assert Repo.exists?(User)
       assert user.email == @attrs.email
@@ -14,14 +14,14 @@ defmodule Renaissance.Test.UsersTest do
     end
 
     test "does not store invalid" do
-      Users.register_user(%{email: "mail@mail.com", password: nil})
+      Users.insert(%{email: "mail@mail.com", password: nil})
       refute Repo.exists?(User)
     end
   end
 
   describe "exists?/1" do
     test "true when user with given id" do
-      {:ok, user} = Users.register_user(@attrs)
+      {:ok, user} = Users.insert(@attrs)
       assert Users.exists?(user.id)
     end
 
@@ -32,18 +32,18 @@ defmodule Renaissance.Test.UsersTest do
 
   describe "verify_login/2" do
     test "verifies login when correct password for known user" do
-      Users.register_user(@attrs)
+      Users.insert(@attrs)
       assert Users.verify_login(@attrs.email, @attrs.password)
     end
 
     test "rejects login when invalid password for known user" do
-      Users.register_user(@attrs)
+      Users.insert(@attrs)
 
       assert {:error, "invalid password"} == Users.verify_login(@attrs.email, "wrong_password")
     end
 
     test "rejects login unknown user" do
-      Users.register_user(@attrs)
+      Users.insert(@attrs)
 
       assert {:error, "invalid user-identifier"} ==
                Users.verify_login("unknown@mail.com", "wrong_password")

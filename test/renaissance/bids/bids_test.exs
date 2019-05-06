@@ -16,9 +16,9 @@ defmodule Renaissance.Test.BidsTest do
   }
 
   setup _context do
-    {:ok, seller} = Users.register_user(%{email: "seller@mail.com", password: "password"})
-    {:ok, auction} = Auctions.create_auction(seller.id, @auction_params)
-    {:ok, bidder} = Users.register_user(%{email: "bidder@mail.com", password: "password"})
+    {:ok, seller} = Users.insert(%{email: "seller@mail.com", password: "password"})
+    {:ok, auction} = Auctions.insert(seller.id, @auction_params)
+    {:ok, bidder} = Users.insert(%{email: "bidder@mail.com", password: "password"})
 
     [
       params: %{
@@ -29,9 +29,9 @@ defmodule Renaissance.Test.BidsTest do
     ]
   end
 
-  describe "place_bid/1" do
+  describe "insert/1" do
     test "places a valid bid", %{params: valid_params} do
-      {:ok, new_bid} = Bids.place_bid(valid_params)
+      {:ok, new_bid} = Bids.insert(valid_params)
 
       assert new_bid.bidder_id == valid_params["bidder_id"]
       assert new_bid.auction_id == valid_params["auction_id"]
@@ -39,14 +39,14 @@ defmodule Renaissance.Test.BidsTest do
     end
 
     test "does not place when invalid bidder id", %{params: valid_params} do
-      {:error, changeset} = Bids.place_bid(Map.replace!(valid_params, "bidder_id", 0))
+      {:error, changeset} = Bids.insert(Map.replace!(valid_params, "bidder_id", 0))
 
       assert "does not exist" in errors_on(changeset).bidder_id
       refute Repo.exists?(Bid)
     end
 
     test "does not place when invalid auction id", %{params: valid_params} do
-      {:error, changeset} = Bids.place_bid(Map.replace!(valid_params, "auction_id", 0))
+      {:error, changeset} = Bids.insert(Map.replace!(valid_params, "auction_id", 0))
 
       assert "does not exist" in errors_on(changeset).auction_id
       refute Repo.exists?(Bid)
@@ -55,7 +55,7 @@ defmodule Renaissance.Test.BidsTest do
 
   describe "exists?/1" do
     test "true when bid with given id", %{params: valid_params} do
-      {:ok, bid} = Bids.place_bid(valid_params)
+      {:ok, bid} = Bids.insert(valid_params)
       assert Bids.exists?(bid.id) == true
     end
 
@@ -71,8 +71,8 @@ defmodule Renaissance.Test.BidsTest do
     end
 
     test "details the highest existing bid for the given auction", %{params: valid_params} do
-      Bids.place_bid(Map.replace!(valid_params, "amount", "10.05"))
-      Bids.place_bid(Map.replace!(valid_params, "amount", "10.00"))
+      Bids.insert(Map.replace!(valid_params, "amount", "10.05"))
+      Bids.insert(Map.replace!(valid_params, "amount", "10.00"))
 
       result = Bids.get_highest_bid(valid_params["auction_id"])
 
@@ -83,18 +83,18 @@ defmodule Renaissance.Test.BidsTest do
     test "user can place back-to-back bids", %{params: valid_params} do
       auction_id = valid_params["auction_id"]
 
-      Bids.place_bid(Map.replace!(valid_params, "amount", "8.01"))
+      Bids.insert(Map.replace!(valid_params, "amount", "8.01"))
 
       result_one = Bids.get_highest_bid(auction_id)
       assert Money.compare(result_one.amount, Money.new(8_01)) == 0
 
-      Bids.place_bid(Map.replace!(valid_params, "amount", "10.05"))
+      Bids.insert(Map.replace!(valid_params, "amount", "10.05"))
 
       result_two = Bids.get_highest_bid(auction_id)
       assert Money.compare(result_two.amount, Money.new(10_05)) == 0
 
-      Bids.place_bid(Map.replace!(valid_params, "amount", "10.00"))
-      Bids.place_bid(Map.replace!(valid_params, "amount", "12.70"))
+      Bids.insert(Map.replace!(valid_params, "amount", "10.00"))
+      Bids.insert(Map.replace!(valid_params, "amount", "12.70"))
 
       result_three = Bids.get_highest_bid(auction_id)
       assert Money.compare(result_three.amount, Money.new(12_70)) == 0

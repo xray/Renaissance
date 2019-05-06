@@ -3,7 +3,7 @@ defmodule Renaissance.Auctions do
   alias Renaissance.{Auction, Repo, Bids}
   alias Renaissance.Helpers
 
-  def create_auction(user_id, params) do
+  def insert(user_id, params) do
     params =
       params
       |> Helpers.Money.to_amount("price")

@@ -26,13 +26,13 @@ defmodule Renaissance.Test.AuctionsTest do
 
   setup _context do
     user_params = %{email: "test@suite.com", password: "password"}
-    {:ok, user} = Users.register_user(user_params)
+    {:ok, user} = Users.insert(user_params)
     [user_id: user.id]
   end
 
-  describe "create_auction/2" do
+  describe "insert/2" do
     test "stores a valid auction in the db", %{user_id: seller_id} do
-      {:ok, new_auction} = Auctions.create_auction(seller_id, @auction_one)
+      {:ok, new_auction} = Auctions.insert(seller_id, @auction_one)
 
       assert new_auction.title == @auction_one["title"]
       assert new_auction.description == @auction_one["description"]
@@ -41,12 +41,12 @@ defmodule Renaissance.Test.AuctionsTest do
 
     test "does not store when title is blank", %{user_id: seller_id} do
       invalid_params = %{@auction_two | "title" => ""}
-      assert {:error, _} = Auctions.create_auction(seller_id, invalid_params)
+      assert {:error, _} = Auctions.insert(seller_id, invalid_params)
       refute Repo.exists?(Auction)
     end
 
     test "does not store when invalid seller_id" do
-      {:error, changeset} = Auctions.create_auction(0, @auction_two)
+      {:error, changeset} = Auctions.insert(0, @auction_two)
 
       assert "does not exist" in errors_on(changeset).seller_id
       refute Repo.exists?(Auction)
@@ -55,7 +55,7 @@ defmodule Renaissance.Test.AuctionsTest do
 
   describe "exists?/1" do
     test "true when auction with given id", %{user_id: seller_id} do
-      {:ok, auction} = Auctions.create_auction(seller_id, @auction_one)
+      {:ok, auction} = Auctions.insert(seller_id, @auction_one)
       assert Auctions.exists?(auction.id)
     end
 
@@ -66,7 +66,7 @@ defmodule Renaissance.Test.AuctionsTest do
 
   describe "open?/1" do
     test "true when end time is in the future", %{user_id: seller_id} do
-      {:ok, auction_created} = Auctions.create_auction(seller_id, @auction_one)
+      {:ok, auction_created} = Auctions.insert(seller_id, @auction_one)
       assert Auctions.open?(auction_created.id)
     end
 

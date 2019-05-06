@@ -2,7 +2,7 @@ defmodule Renaissance.Users do
   import Ecto.Query
   alias Renaissance.{User, Repo}
 
-  def register_user(params) do
+  def insert(params) do
     User.changeset(%User{}, params)
     |> Repo.insert()
   end

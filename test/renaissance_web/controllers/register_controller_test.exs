@@ -12,7 +12,7 @@ defmodule RenaissanceWeb.RegisterControllerTest do
     end
 
     test "GET /register/new redirects to index if user logged in" do
-      {:ok, user} = Users.register_user(@valid_params)
+      {:ok, user} = Users.insert(@valid_params)
 
       conn =
         build_conn()
