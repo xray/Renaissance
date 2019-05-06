@@ -119,7 +119,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
                ~s(type="text" value="#{@auction_one_params.description}")
     end
 
-    test "POST /auction/:id/update_description", %{conn: conn} do
+    test "PUT /auction/:id/update", %{conn: conn} do
       conn = conn |> post("/auctions", @auction_one_params)
       auction_id = Repo.get_by(Auction, title: @auction_one_params.title).id
       conn = get(conn, "/auctions/#{auction_id}")
@@ -128,7 +128,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
 
       conn =
         conn
-        |> post("/auctions/#{auction_id}/update_description", %{description: updated_description})
+        |> put("/auctions/#{auction_id}", %{description: updated_description})
 
       assert get_flash(conn, :info) == "Auction Updated!"
     end

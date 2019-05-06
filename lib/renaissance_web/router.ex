@@ -22,9 +22,7 @@ defmodule RenaissanceWeb.Router do
     get "/login", LoginController, :login
     post "/login", LoginController, :verify
 
-    post "/auctions/:id/update_description", AuctionController, :update_description
-
     resources "/register", RegisterController, only: [:new, :create]
-    resources "/auctions", AuctionController, only: [:index, :create, :new, :show]
+    resources "/auctions", AuctionController, only: [:index, :create, :new, :show, :update]
   end
 end

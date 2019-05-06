@@ -5,7 +5,7 @@
       <%= if @user.email != @auction.seller.email do %>
         <i><%= @auction.description %></i>
       <% else %>
-        <%= form_for @changeset, Routes.auction_path(@conn, :update_description, @auction), fn f -> %>
+        <%= form_for @changeset, Routes.auction_path(@conn, :update, @auction), [method: :put], fn f -> %>
           <%= text_input f, :description, class: "txt-form",
           value: @auction.description, required: true %>
           <%= error_tag f, :description %>

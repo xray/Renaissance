@@ -51,7 +51,7 @@ defmodule RenaissanceWeb.AuctionController do
     end
   end
 
-  def update_description(conn, params) do
+  def update(conn, params) do
     id = String.to_integer(params["id"])
     response = Auctions.update_description(id, params)
 
