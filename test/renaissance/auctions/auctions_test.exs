@@ -84,12 +84,25 @@ defmodule Renaissance.Test.AuctionsTest do
       {:ok, auction} = Auctions.create_auction(seller_id, @auction_one)
 
       auction_id = auction.id
-      updated_description = "Updated"
+      updated_description = "Updated Description"
 
-      Auctions.update_description(auction_id, %{"description" => updated_description})
+      Auctions.update_auction(auction_id, %{"description" => updated_description})
 
       retrieved_auction = Auctions.get(auction_id)
       assert retrieved_auction.description == updated_description
+    end
+
+    test "updates a pre-existing auction title" do
+      seller_id = fixture(:user).id
+      {:ok, auction} = Auctions.create_auction(seller_id, @auction_one)
+
+      auction_id = auction.id
+      updated_title = "Updated Title"
+
+      Auctions.update_auction(auction_id, %{"title" => updated_title})
+
+      retrieved_auction = Auctions.get(auction_id)
+      assert retrieved_auction.title == updated_title
     end
   end
 end

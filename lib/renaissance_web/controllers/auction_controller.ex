@@ -53,7 +53,8 @@ defmodule RenaissanceWeb.AuctionController do
 
   def update(conn, params) do
     id = String.to_integer(params["id"])
-    with {:ok, _auctions} <- Auctions.update_description(id, params) do
+
+    with {:ok, _auctions} <- Auctions.update_auction(id, params) do
       conn
       |> put_flash(:info, "Auction Updated!")
       |> render("show.html", %{

@@ -18,10 +18,15 @@ defmodule Renaissance.Auctions do
     Repo.insert(Auction.changeset(%Auction{}, details))
   end
 
-  def update_description(auction_id, params) do
-    Auction
-    |> Repo.get!(auction_id)
-    |> change(description: params["description"])
+  def update_auction(auction_id, params) do
+    auction =
+      Auction
+      |> Repo.get!(auction_id)
+
+    change(auction, %{
+      description: params["description"] || auction.description,
+      title: params["title"] || auction.title
+    })
     |> Repo.update()
   end
 
