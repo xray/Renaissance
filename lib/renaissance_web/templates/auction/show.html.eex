@@ -2,7 +2,19 @@
   <div class="pageGroup show-auction">
     <h1 class="lbl-group"><%= @auction.title %></h1>
     <div class="content-text show-auction">
-      <i><%= @auction.description %></i>
+      <%= if @user.email != @auction.seller.email do %>
+        <i><%= @auction.description %></i>
+      <% else %>
+        <%= form_for @changeset, Routes.auction_path(@conn, :update, @auction), [method: :put], fn f -> %>
+          <%= text_input f, :description, class: "txt-form",
+          value: @auction.description, required: true %>
+          <%= error_tag f, :description %>
+
+          <div class="form-section">
+          <%= submit "Update Auction" %>
+          </div>
+        <% end %>
+      <% end %>
       <div class="centered-container">
         <table class="item-table">
           <tr class="table-row"><td class="table-section table-left">Price:</td><td class="bold table-section table-right"><%= @auction.price %></td></tr>
