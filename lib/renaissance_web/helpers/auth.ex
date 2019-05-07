@@ -12,9 +12,7 @@ defmodule RenaissanceWeb.Helpers.Auth do
     |> return_user()
   end
 
-  defp return_user(nil) do
-    nil
-  end
+  defp return_user(nil), do: nil
 
   defp return_user(id) do
     Users.get(id)
