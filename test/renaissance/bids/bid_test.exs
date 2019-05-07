@@ -76,11 +76,11 @@ defmodule Renaissance.Test.BidTest do
     changeset = Bid.changeset(%Bid{}, invalid_params)
 
     refute changeset.valid?
-    assert "can't bid on auction item that you're selling" in errors_on(changeset).bidder_id
+    assert "can't bid on the item you're selling" in errors_on(changeset).bidder_id
   end
 
-  test "false when end time is not in the future", %{params: valid_params, seller_id: seller_id} do
-    # TODO clean up description
+  @tag :sleeps
+  test "false unless end time is in the future", %{params: valid_params, seller_id: seller_id} do
     end_time =
       Timex.add(DateTime.utc_now(), %Timex.Duration{
         megaseconds: 0,

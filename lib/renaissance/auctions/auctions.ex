@@ -6,12 +6,14 @@ defmodule Renaissance.Auctions do
   def insert(user_id, params) do
     params =
       params
-      |> Helpers.Money.to_amount("price")
+      |> Helpers.Money.to_money!("price")
       |> Map.put("seller_id", user_id)
 
     Auction.changeset(%Auction{}, params)
     |> Repo.insert()
   end
+
+  def exists?(nil), do: false
 
   def exists?(id) do
     Repo.exists?(from a in Auction, where: a.id == ^id)
@@ -23,20 +25,31 @@ defmodule Renaissance.Auctions do
     |> Repo.get!(id)
   end
 
+  def get_seller_id(nil), do: nil
+
   def get_seller_id(id) do
-    if exists?(id), do: get!(id).seller_id
+    case Repo.get(Auction, id) do
+      nil -> nil
+      auction -> auction.seller_id
+    end
   end
+
+  def get_starting_amount(nil), do: nil
 
   def get_starting_amount(id) do
-    if exists?(id), do: get!(id).price
+    case Repo.get(Auction, id) do
+      nil -> nil
+      auction -> auction.price
+    end
   end
 
-  def get_current_amount(id) do
-    larger =
-      Bids.get_highest_bid_amount(id)
-      |> Helpers.Money.money_max(get_starting_amount(id))
+  def get_current_amount(nil), do: nil
 
-    if is_nil(larger), do: Money.new(0), else: larger
+  def get_current_amount(id) do
+    starting = get_starting_amount(id) |> Helpers.Money.to_money()
+    current = Bids.get_highest_bid_amount(id) |> Helpers.Money.to_money()
+
+    Helpers.Money.money_max(starting, current)
   end
 
   def get_all() do
@@ -46,6 +59,9 @@ defmodule Renaissance.Auctions do
   end
 
   def open?(id) do
-    if exists?(id), do: get!(id).end_auction_at |> Timex.after?(Timex.now())
+    case Repo.get(Auction, id) do
+      nil -> false
+      auction -> Timex.after?(auction.end_auction_at, Timex.now())
+    end
   end
 end

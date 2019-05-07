@@ -22,6 +22,7 @@ defmodule RenaissanceWeb.AuctionsLive.ShowViewTest do
       assert expected == time_remaining(@ny_2030, july4th_2030_random_time)
     end
 
+    @tag :sleeps
     test "returns updated time remaining for valid inputs" do
       end_time =
         Timex.add(DateTime.utc_now(), %Timex.Duration{

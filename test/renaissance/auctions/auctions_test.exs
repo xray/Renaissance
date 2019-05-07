@@ -42,14 +42,12 @@ defmodule Renaissance.Test.AuctionsTest do
     test "does not store when title is blank", %{user_id: seller_id} do
       invalid_params = %{@auction_two | "title" => ""}
       assert {:error, _} = Auctions.insert(seller_id, invalid_params)
-      refute Repo.exists?(Auction)
     end
 
     test "does not store when invalid seller_id" do
       {:error, changeset} = Auctions.insert(0, @auction_two)
 
       assert "does not exist" in errors_on(changeset).seller_id
-      refute Repo.exists?(Auction)
     end
   end
 
@@ -70,10 +68,11 @@ defmodule Renaissance.Test.AuctionsTest do
       assert Auctions.open?(auction_created.id)
     end
 
-    test "nil when auction does not exist" do
-      assert is_nil(Auctions.open?(0))
+    test "false when auction does not exist" do
+      assert Auctions.open?(0) == false
     end
 
+    @tag :sleeps
     test "false when end time is in not the future", %{user_id: seller_id} do
       end_time =
         Timex.add(DateTime.utc_now(), %Timex.Duration{

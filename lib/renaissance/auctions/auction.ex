@@ -24,7 +24,7 @@ defmodule Renaissance.Auction do
     |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
     |> foreign_key_constraint(:seller_id, name: :auctions_user_id_fkey)
-    |> Validators.validate_amount(:price)
+    |> Validators.validate_amount(:price, 0)
     |> validate_end_datetime()
   end
 

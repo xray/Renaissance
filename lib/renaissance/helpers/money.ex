@@ -1,8 +1,8 @@
 defmodule Renaissance.Helpers.Money do
   defp extract_amount(nil), do: "000"
-  defp extract_amount(amount), do: amount
+  defp extract_amount(string), do: string
 
-  def to_amount(params, name) do
+  def to_money!(params, name) do
     amount =
       extract_amount(params[name])
       |> String.replace(".", "")
@@ -12,31 +12,28 @@ defmodule Renaissance.Helpers.Money do
     Map.replace!(params, name, amount)
   end
 
-  def to_value(param) do
-    {_, value} = Money.Ecto.Amount.Type.dump(param)
-    value
-  end
+  def money?(%Money{}), do: true
+  def money?(p), do: is_integer(p)
 
-  def amount?(%Money{}), do: true
-  def amount?(p), do: is_integer(p)
-
-  def money_max(m1, m2) do
-    cond do
-      amount?(m1) && amount?(m2) == true ->
-        if to_value(m1) >= to_value(m2), do: to_money(m1), else: to_money(m2)
-
-      amount?(m1) == true && is_nil(m2) ->
-        to_money(m1)
-
-      amount?(m2) == true && is_nil(m1) ->
-        to_money(m2)
-
-      true ->
-        nil
+  def to_money(m) do
+    if money?(m) do
+      if is_integer(m), do: Money.new(m), else: m
     end
   end
 
-  defp to_money(m) do
-    if is_integer(m), do: Money.new(m), else: m
+  def compare(nil, _), do: nil
+  def compare(_, nil), do: nil
+
+  def compare(m1, m2) do
+    # Wrapper for readability
+    case Money.compare(m1, m2) do
+      -1 -> :lt
+      0 -> :eq
+      1 -> :gt
+    end
+  end
+
+  def money_max(m1, m2) do
+    if compare(m1, m2) == :lt, do: m2, else: m1
   end
 end

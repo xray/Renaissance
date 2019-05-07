@@ -1,47 +1,48 @@
 defmodule Renaissance.Bids do
   import Ecto.Query
-  alias Renaissance.{Repo, Bid}
+  alias Renaissance.{Bid, Repo}
   alias Renaissance.Helpers
 
   def insert(params) do
-    params = Helpers.Money.to_amount(params, "amount")
-
-    Bid.changeset(%Bid{}, params)
-    |> Repo.insert()
+    params = Helpers.Money.to_money!(params, "amount")
+    Bid.changeset(%Bid{}, params) |> Repo.insert()
   end
+
+  def exists(nil), do: nil
 
   def exists?(id) do
     Repo.exists?(from b in Bid, where: b.id == ^id)
   end
 
-  def get_highest_bid(auction_id) do
-    query = "SELECT bidder_id, amount, created_at
-             FROM bids
-             WHERE amount = (
-                SELECT MAX(amount)
-                FROM bids
-                WHERE #{auction_id} = auction_id
-             );"
-
-    result = Ecto.Adapters.SQL.query!(Repo, query, [])
-
-    types = %{
-      bidder_id: :integer,
-      amount: Money.Ecto.Amount.Type,
-      created_at: :utc_datetime
-    }
-
-    Enum.map(result.rows, &Repo.load(types, {result.columns, &1}))
-    |> Enum.at(0)
-  end
+  def get_highest_bid_amount(nil), do: nil
 
   def get_highest_bid_amount(auction_id) do
     query =
       from b in "bids",
-        select: b.amount,
+        select: type(b.amount, Money.Ecto.Type),
         where: b.auction_id == ^auction_id
 
     Repo.aggregate(query, :max, :amount)
+  end
+
+  def get_highest_bid(nil), do: nil
+
+  def get_highest_bid(auction_id) do
+    highest_amount = get_highest_bid_amount(auction_id)
+
+    query =
+      from b in Bid,
+        where: b.auction_id == ^auction_id and b.amount == type(^highest_amount, b.amount),
+        order_by: [asc: b.created_at],
+        select: %{
+          id: b.id,
+          amount: b.amount,
+          created_at: b.created_at,
+          bidder_id: b.bidder_id,
+          auction_id: b.auction_id
+        }
+
+    Repo.one(query)
   end
 
   def get!(id) do
