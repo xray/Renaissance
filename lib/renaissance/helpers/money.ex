@@ -12,6 +12,10 @@ defmodule Renaissance.Helpers.Money do
     Map.replace!(params, name, amount)
   end
 
+  def to_float(value) do
+    value.amount / 100
+  end
+
   def money?(%Money{}), do: true
   def money?(p), do: is_integer(p)
 

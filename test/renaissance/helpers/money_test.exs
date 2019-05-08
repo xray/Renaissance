@@ -38,4 +38,16 @@ defmodule Renaissance.Test.MoneyTest do
       assert Helpers.Money.money_max(@underscore.with, @underscore.none) == @underscore.with
     end
   end
+
+  describe "to_float/1" do
+    test "returns a float of 9.99 when given a money object with a value of 999" do
+      value = Money.new(999)
+      assert Helpers.Money.to_float(value) == 9.99
+    end
+
+    test "returns a float of 9.00 when given a money object with a value of 900" do
+      value = Money.new(900)
+      assert Helpers.Money.to_float(value) == 9.00
+    end
+  end
 end
