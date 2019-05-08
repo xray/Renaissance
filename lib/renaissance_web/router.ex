@@ -24,5 +24,6 @@ defmodule RenaissanceWeb.Router do
 
     resources "/register", RegisterController, only: [:new, :create]
     resources "/auctions", AuctionController, only: [:index, :create, :new, :show, :update]
+    resources "/bid", BidController, only: [:create]
   end
 end

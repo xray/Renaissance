@@ -182,24 +182,16 @@ defmodule RenaissanceWeb.AuctionControllerTest do
 
   describe "show/2 when the auction does not belong to the user" do
     setup %{conn: conn} do
-      auction_end = %{
-        day: 15,
-        hour: 14,
-        minute: 3,
-        month: 4,
-        year: 3019
-      }
-
       auction_info = %{
         "title" => "Test Title",
         "description" => "Test description.",
-        "end_auction_at" => auction_end,
+        "end_auction_at" => @valid_end,
         "price" => "10.00"
       }
 
       seller_params = %{email: "seller@seller.com", password: "password"}
       {:ok, user_seller} = Users.insert(seller_params)
-      {:ok, auction} = Auctions.insert(user_seller.id, auction_info)
+      {:ok, _auction} = Auctions.insert(user_seller.id, auction_info)
 
       bidder_params = %{email: "bidder@bidder.com", password: "password"}
       {:ok, user_bidder} = Users.insert(bidder_params)
@@ -213,7 +205,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
       conn = get(conn, "/auctions/#{auction_id}")
 
       assert html_response(conn, 200) =~
-               ~s(<input class="txt-form" id="amount" min="11.00" name="amount" step="0.01" type="number" value="11.00" required="">)
+               ~s(<input class="txt-form" id="amount" min="10.0" name="amount" step="0.01" type="number" value="11.0" required>)
     end
   end
 end

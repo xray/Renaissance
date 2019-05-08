@@ -1,7 +1,7 @@
 defmodule RenaissanceWeb.AuctionController do
   use RenaissanceWeb, :controller
 
-  alias Renaissance.Auctions
+  alias Renaissance.{Auctions, Bids, Helpers}
   alias RenaissanceWeb.Helpers.Auth
 
   def index(conn, _params) do
@@ -39,11 +39,17 @@ defmodule RenaissanceWeb.AuctionController do
 
   def show(conn, %{"id" => id}) do
     if Auth.signed_in?(conn) do
-      {id, _} = Integer.parse(id)
+      id = String.to_integer(id)
+
+      current_price =
+        Bids.get_highest_bid_amount(id) ||
+          Auctions.get!(id).price
+          |> Helpers.Money.to_float()
 
       render(conn, "show.html", %{
         auction: Auctions.get!(id),
         user: Auth.current_user(conn),
+        current_price: current_price,
         changeset: conn
       })
     else

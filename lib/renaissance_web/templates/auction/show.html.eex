@@ -4,9 +4,22 @@
     <h1 class="lbl-group"><%= @auction.title %></h1>
     <h4 class="mod-txt_secondary"><%= @auction.description %></h4>
     <%= render("_details.html", auction: @auction) %>
+    <%= form_for @changeset, Routes.bid_path(@conn, :create), fn f -> %>
+      <div class="form-section">
+        <%= label f, :amount, "Make a Bid", class: "lbl-form" %>
+        <div class="form-section-horizontal">
+          <p class="dollar-sign">$</p>
+          <%= number_input f, :amount,  class: "txt-form",
+          required: true, min: @current_price, step: 0.01, value: @current_price + 1.00 %>
+        </div>
+        <%= error_tag f, :amount %>
+      </div>
+    <% end %>
     <%= live_render(@conn, RenaissanceWeb.AuctionsLive.Show, session: %{auction: @auction}) %>
     <div class="nav-container">
       <%= link "back", to: Routes.auction_path(@conn, :index), class: "button" %>
+      <div class="nav-spacer"></div>
+      <%= submit "Submit Bid" %>
     </div>
   <% else %>
     <%= form_for @changeset, Routes.auction_path(@conn, :update, @auction), [method: :put], fn f -> %>
