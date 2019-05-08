@@ -42,9 +42,8 @@ defmodule RenaissanceWeb.AuctionController do
       id = String.to_integer(id)
 
       current_price =
-        Bids.get_highest_bid_amount(id) ||
-          Auctions.get!(id).price
-          |> Helpers.Money.to_float()
+        (Bids.get_highest_bid_amount(id) || Auctions.get!(id).price.amount)
+        |> Helpers.Money.to_float()
 
       render(conn, "show.html", %{
         auction: Auctions.get!(id),

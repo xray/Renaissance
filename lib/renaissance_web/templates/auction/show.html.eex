@@ -6,21 +6,22 @@
     <%= render("_details.html", auction: @auction) %>
     <%= form_for @changeset, Routes.bid_path(@conn, :create), fn f -> %>
       <div class="form-section">
+        <%= hidden_input f, :auction_id, value: @auction.id%>
         <%= label f, :amount, "Make a Bid", class: "lbl-form" %>
         <div class="form-section-horizontal">
           <p class="dollar-sign">$</p>
-          <%= number_input f, :amount,  class: "txt-form",
+          <%= number_input f, :amount, class: "txt-form",
           required: true, min: @current_price, step: 0.01, value: @current_price + 1.00 %>
         </div>
         <%= error_tag f, :amount %>
       </div>
-    <% end %>
     <%= live_render(@conn, RenaissanceWeb.AuctionsLive.Show, session: %{auction: @auction}) %>
     <div class="nav-container">
       <%= link "back", to: Routes.auction_path(@conn, :index), class: "button" %>
       <div class="nav-spacer"></div>
       <%= submit "Submit Bid" %>
     </div>
+    <% end %>
   <% else %>
     <%= form_for @changeset, Routes.auction_path(@conn, :update, @auction), [method: :put], fn f -> %>
       <%= text_input f, :title, class: "edit-title auction-editable lbl-group",

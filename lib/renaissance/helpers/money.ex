@@ -5,6 +5,7 @@ defmodule Renaissance.Helpers.Money do
   def to_money!(params, name) do
     amount =
       extract_amount(params[name])
+      |> normalize_float
       |> String.replace(".", "")
       |> String.to_integer()
       |> Money.new()
@@ -13,7 +14,7 @@ defmodule Renaissance.Helpers.Money do
   end
 
   def to_float(value) do
-    value.amount / 100
+    value / 100
   end
 
   def money?(%Money{}), do: true
@@ -39,5 +40,48 @@ defmodule Renaissance.Helpers.Money do
 
   def money_max(m1, m2) do
     if compare(m1, m2) == :lt, do: m2, else: m1
+  end
+
+  defp normalize_float(float_as_string) do
+    number_of_decimal_places =
+      String.split(float_as_string, ".")
+      |> Enum.count()
+
+    secondary =
+      case number_of_decimal_places do
+        1 ->
+          0
+
+        _ ->
+          float_as_string
+          |> String.split(".")
+          |> List.last()
+          |> String.length()
+      end
+
+    case secondary do
+      0 ->
+        "#{float_as_string}.00"
+
+      1 ->
+        "#{float_as_string}0"
+
+      2 ->
+        float_as_string
+
+      _ ->
+        last_two_digits =
+          float_as_string
+          |> String.split(".")
+          |> List.last()
+          |> String.slice(0, 2)
+
+        first_digits =
+          float_as_string
+          |> String.split(".")
+          |> List.first()
+
+        "#{first_digits}.#{last_two_digits}"
+    end
   end
 end

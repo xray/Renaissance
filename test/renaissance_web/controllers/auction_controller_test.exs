@@ -191,7 +191,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
 
       seller_params = %{email: "seller@seller.com", password: "password"}
       {:ok, user_seller} = Users.insert(seller_params)
-      {:ok, _auction} = Auctions.insert(user_seller.id, auction_info)
+      Auctions.insert(user_seller.id, auction_info)
 
       bidder_params = %{email: "bidder@bidder.com", password: "password"}
       {:ok, user_bidder} = Users.insert(bidder_params)
