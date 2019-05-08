@@ -45,5 +45,21 @@ defmodule RenaissanceWeb.BidControllerTest do
       assert get_flash(result, :info) == "Bid Placed!"
       assert redirected_to(result, 302) == "/auctions/#{auction_id}"
     end
+
+    test "doesn't place bid that is under current price", %{conn: conn} do
+      auction_id = Repo.get_by(Auction, title: @valid_auction["title"]).id
+      user_id = Plug.Conn.get_session(conn, :current_user_id)
+
+      result =
+        conn
+        |> post("/bid", %{
+          auction_id: Integer.to_string(auction_id),
+          bidder_id: user_id,
+          amount: "9"
+        })
+
+      assert get_flash(result, :error) == "must be greater than $10.00"
+      assert redirected_to(result, 302) == "/auctions/#{auction_id}"
+    end
   end
 end
