@@ -18,8 +18,9 @@
         <%= error_tag f, :error %>
       </div>
 
-      <div class="form-section">
-        <%= submit "Submit" %>
+      <div class="nav-container">
+        <div class="nav-spacer"></div>
+        <%= submit "Login" %>
       </div>
     <% end %>
 

@@ -19,8 +19,9 @@
         <%= error_tag f, :password %>
       </div>
 
-      <div class="form-section">
-        <%= submit "Submit" %>
+      <div class="nav-container">
+        <div class="nav-spacer"></div>
+        <%= submit "Register" %>
       </div>
     <% end %>
 

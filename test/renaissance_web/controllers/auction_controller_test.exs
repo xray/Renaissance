@@ -1,6 +1,6 @@
 defmodule RenaissanceWeb.AuctionControllerTest do
   use RenaissanceWeb.ConnCase
-  alias Renaissance.{Auction, Repo, Users}
+  alias Renaissance.{Auction, Repo, Users, Auctions}
   alias Plug.Test
 
   @valid_user_params %{email: "mail@mail.com", password: "password"}
@@ -177,6 +177,43 @@ defmodule RenaissanceWeb.AuctionControllerTest do
         |> put("/auctions/#{auction_id}", %{title: updated_title})
 
       assert get_flash(conn, :info) == "Auction Updated!"
+    end
+  end
+
+  describe "show/2 when the auction does not belong to the user" do
+    setup %{conn: conn} do
+      auction_end = %{
+        day: 15,
+        hour: 14,
+        minute: 3,
+        month: 4,
+        year: 3019
+      }
+
+      auction_info = %{
+        "title" => "Test Title",
+        "description" => "Test description.",
+        "end_auction_at" => auction_end,
+        "price" => "10.00"
+      }
+
+      seller_params = %{email: "seller@seller.com", password: "password"}
+      {:ok, user_seller} = Users.insert(seller_params)
+      {:ok, auction} = Auctions.insert(user_seller.id, auction_info)
+
+      bidder_params = %{email: "bidder@bidder.com", password: "password"}
+      {:ok, user_bidder} = Users.insert(bidder_params)
+
+      {:ok, conn: Test.init_test_session(conn, current_user_id: user_bidder.id)}
+    end
+
+    test "GET /auction/:id a form for placing a bid is present", %{conn: conn} do
+      auction_id = Repo.get_by(Auction, title: @auction_one_params.title).id
+
+      conn = get(conn, "/auctions/#{auction_id}")
+
+      assert html_response(conn, 200) =~
+               ~s(<input class="txt-form" id="amount" min="11.00" name="amount" step="0.01" type="number" value="11.00" required="">)
     end
   end
 end
