@@ -23,6 +23,6 @@ defmodule RenaissanceWeb.Router do
     post "/login", LoginController, :verify
 
     resources "/register", RegisterController, only: [:new, :create]
-    resources "/auctions", AuctionController, only: [:index, :create, :new, :show]
+    resources "/auctions", AuctionController, only: [:index, :create, :new, :show, :update]
   end
 end

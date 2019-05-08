@@ -16,7 +16,19 @@ defmodule Renaissance.Auctions do
   def exists?(nil), do: false
 
   def exists?(id) do
-    Repo.exists?(from a in Auction, where: a.id == ^id)
+    Repo.exists?(from(a in Auction, where: a.id == ^id))
+  end
+
+  def update_auction(auction_id, params) do
+    auction =
+      Auction
+      |> Repo.get!(auction_id)
+
+    change(auction, %{
+      description: params["description"] || auction.description,
+      title: params["title"] || auction.title
+    })
+    |> Repo.update()
   end
 
   def get!(id) do
