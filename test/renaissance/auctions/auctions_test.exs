@@ -1,6 +1,6 @@
 defmodule Renaissance.Test.AuctionsTest do
   use Renaissance.DataCase
-  alias Renaissance.{Auctions, Users, Repo}
+  alias Renaissance.{Auction, Auctions, Repo, Users}
 
   @valid_end %{
     day: "15",
@@ -17,12 +17,6 @@ defmodule Renaissance.Test.AuctionsTest do
     "price" => "10.00"
   }
 
-  def fixture(:user) do
-    user_params = %{email: "test@suite.com", password: "password"}
-    {:ok, user} = Users.register_user(user_params)
-    user
-  end
-
   @auction_two %{
     "title" => "Test Title Two",
     "description" => "Test description two.",
@@ -30,78 +24,96 @@ defmodule Renaissance.Test.AuctionsTest do
     "price" => "15.00"
   }
 
-  describe "auctions" do
-    test "stores a valid auction in the db" do
-      seller_id = fixture(:user).id
-      {:ok, auction_created} = Auctions.create_auction(seller_id, @auction_one)
+  setup _context do
+    user_params = %{email: "test@suite.com", password: "password"}
+    {:ok, user} = Users.insert(user_params)
+    [user_id: user.id]
+  end
 
-      assert auction_created.title == @auction_one["title"]
-      assert auction_created.description == @auction_one["description"]
-      assert Money.compare(auction_created.price, Money.new(10_00)) == 0
+  describe "insert/2" do
+    test "stores a valid auction in the db", %{user_id: seller_id} do
+      {:ok, new_auction} = Auctions.insert(seller_id, @auction_one)
+
+      assert new_auction.title == @auction_one["title"]
+      assert new_auction.description == @auction_one["description"]
+      assert Money.compare(new_auction.price, Money.new(10_00)) == 0
     end
 
-    test "does not store when title is blank" do
-      seller_id = fixture(:user).id
-
-      invalid_params = Map.put(@auction_two, "title", "")
-      Auctions.create_auction(seller_id, invalid_params)
-
-      count = Repo.aggregate(Ecto.Query.from(p in "auctions"), :count, :id)
-      assert 0 == count
+    test "does not store when title is blank", %{user_id: seller_id} do
+      invalid_params = %{@auction_two | "title" => ""}
+      assert {:error, _} = Auctions.insert(seller_id, invalid_params)
     end
 
     test "does not store when invalid seller_id" do
-      seller_id = fixture(:user).id
-      invalid_seller_id = seller_id * 7 - 1
+      {:error, changeset} = Auctions.insert(0, @auction_two)
 
-      exception =
-        assert_raise Ecto.ConstraintError, fn ->
-          Auctions.create_auction(invalid_seller_id, @auction_two)
-        end
+      assert "does not exist" in errors_on(changeset).seller_id
+    end
+  end
 
-      assert exception.message =~ "foreign_key_constraint"
+  describe "exists?/1" do
+    test "true when auction with given id", %{user_id: seller_id} do
+      {:ok, auction} = Auctions.insert(seller_id, @auction_one)
+      assert Auctions.exists?(auction.id)
     end
 
-    test "returns an index of auctions when logged in" do
-      seller_id = fixture(:user).id
-      {:ok, first} = Auctions.create_auction(seller_id, @auction_one)
-      {:ok, second} = Auctions.create_auction(seller_id, @auction_two)
+    test "false when no auction with given id" do
+      refute Auctions.exists?(0)
+    end
+  end
 
-      count = Repo.aggregate(Ecto.Query.from(p in "auctions"), :count, :id)
-      assert 2 == count
-
-      assert first.title == @auction_one["title"]
-      assert first.description == @auction_one["description"]
-      assert first.price == Money.new(10_00)
-
-      assert second.title == @auction_two["title"]
-      assert second.description == @auction_two["description"]
-      assert second.price == Money.new(15_00)
+  describe "open?/1" do
+    test "true when end time is in the future", %{user_id: seller_id} do
+      {:ok, auction_created} = Auctions.insert(seller_id, @auction_one)
+      assert Auctions.open?(auction_created.id)
     end
 
-    test "updates a pre-existing auction description" do
-      seller_id = fixture(:user).id
-      {:ok, auction} = Auctions.create_auction(seller_id, @auction_one)
+    test "false when auction does not exist" do
+      assert Auctions.open?(0) == false
+    end
+
+    @tag :sleeps
+    test "false when end time is in not the future", %{user_id: seller_id} do
+      end_time =
+        Timex.add(DateTime.utc_now(), %Timex.Duration{
+          megaseconds: 0,
+          seconds: 1,
+          microseconds: 0
+        })
+
+      end_now_params =
+        %{@auction_one | "end_auction_at" => end_time}
+        |> Map.put("seller_id", seller_id)
+
+      {:ok, auction} = Repo.insert(Auction.changeset(%Auction{}, end_now_params))
+
+      :timer.sleep(1000)
+      refute Auctions.open?(auction.id)
+    end
+  end
+
+  describe "update/2" do
+    test "updates a pre-existing auction description", %{user_id: seller_id} do
+      {:ok, auction} = Auctions.insert(seller_id, @auction_one)
 
       auction_id = auction.id
       updated_description = "Updated Description"
 
-      Auctions.update_auction(auction_id, %{"description" => updated_description})
+      Auctions.update(auction_id, %{"description" => updated_description})
 
-      retrieved_auction = Auctions.get(auction_id)
+      retrieved_auction = Auctions.get!(auction_id)
       assert retrieved_auction.description == updated_description
     end
 
-    test "updates a pre-existing auction title" do
-      seller_id = fixture(:user).id
-      {:ok, auction} = Auctions.create_auction(seller_id, @auction_one)
+    test "updates a pre-existing auction title", %{user_id: seller_id} do
+      {:ok, auction} = Auctions.insert(seller_id, @auction_one)
 
       auction_id = auction.id
       updated_title = "Updated Title"
 
-      Auctions.update_auction(auction_id, %{"title" => updated_title})
+      Auctions.update(auction_id, %{"title" => updated_title})
 
-      retrieved_auction = Auctions.get(auction_id)
+      retrieved_auction = Auctions.get!(auction_id)
       assert retrieved_auction.title == updated_title
     end
   end

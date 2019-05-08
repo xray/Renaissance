@@ -1,10 +1,14 @@
 defmodule Renaissance.Users do
+  import Ecto.Query
   alias Renaissance.{User, Repo}
 
-  def register_user(params) do
-    changeset = User.changeset(%User{}, params)
+  def insert(params) do
+    User.changeset(%User{}, params)
+    |> Repo.insert()
+  end
 
-    Repo.insert(changeset)
+  def exists?(id) do
+    Repo.exists?(from u in User, where: u.id == ^id)
   end
 
   def get(id) do

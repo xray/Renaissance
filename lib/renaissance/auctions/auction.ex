@@ -1,7 +1,8 @@
 defmodule Renaissance.Auction do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Renaissance.User
+  alias Renaissance.{User, Bid}
+  alias Renaissance.Helpers.Validators
 
   @required_fields ~w(title description seller_id price end_auction_at)a
   @optional_fields ~w()a
@@ -12,6 +13,7 @@ defmodule Renaissance.Auction do
     field :price, Money.Ecto.Amount.Type
     field :end_auction_at, :utc_datetime
     belongs_to :seller, User
+    has_many :bids, Bid
 
     timestamps(type: :utc_datetime)
   end
@@ -21,24 +23,15 @@ defmodule Renaissance.Auction do
     auction
     |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
-    |> validate_price()
-    |> validate_date()
+    |> foreign_key_constraint(:seller_id, name: :auctions_user_id_fkey)
+    |> Validators.validate_amount(:price, 0)
+    |> validate_end_datetime()
   end
 
-  defp validate_price(changeset) do
-    {_, amount} = Money.Ecto.Amount.Type.dump(get_change(changeset, :price, 0))
+  defp validate_end_datetime(changeset) do
+    end_at = get_change(changeset, :end_auction_at)
 
-    if amount > 0 do
-      changeset
-    else
-      add_error(changeset, :price, "must be greater than 0")
-    end
-  end
-
-  defp validate_date(changeset) do
-    auction_complete = get_change(changeset, :end_auction_at)
-
-    if DateTime.compare(DateTime.utc_now(), auction_complete || DateTime.utc_now()) == :lt do
+    if DateTime.compare(DateTime.utc_now(), end_at || DateTime.utc_now()) == :lt do
       changeset
     else
       add_error(changeset, :end_auction_at, "should be in the future")

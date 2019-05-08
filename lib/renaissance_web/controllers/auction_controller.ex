@@ -24,7 +24,7 @@ defmodule RenaissanceWeb.AuctionController do
     response =
       conn
       |> get_session(:current_user_id)
-      |> Auctions.create_auction(params)
+      |> Auctions.insert(params)
 
     case response do
       {:ok, _user} ->
@@ -42,7 +42,7 @@ defmodule RenaissanceWeb.AuctionController do
       {id, _} = Integer.parse(id)
 
       render(conn, "show.html", %{
-        auction: Auctions.get(id),
+        auction: Auctions.get!(id),
         user: Auth.current_user(conn),
         changeset: conn
       })
@@ -54,16 +54,17 @@ defmodule RenaissanceWeb.AuctionController do
   def update(conn, params) do
     id = String.to_integer(params["id"])
 
-    with {:ok, _auctions} <- Auctions.update_auction(id, params) do
+    with {:ok, _auctions} <- Auctions.update(id, params) do
       conn
       |> put_flash(:info, "Auction Updated!")
       |> render("show.html", %{
-        auction: Auctions.get(id),
+        auction: Auctions.get!(id),
         user: Auth.current_user(conn),
         changeset: conn
       })
     else
-      {:error, changeset} -> render(conn, "show.html", changeset: changeset)
+      {:error, changeset} ->
+        render(conn, "show.html", changeset: changeset)
     end
   end
 end

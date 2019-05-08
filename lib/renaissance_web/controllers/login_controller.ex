@@ -15,8 +15,8 @@ defmodule RenaissanceWeb.LoginController do
     end
   end
 
-  def verify(conn, params) do
-    case Users.verify_login(params["user"]["email"], params["user"]["password"]) do
+  def verify(conn, %{"user" => %{"email" => email, "password" => password}}) do
+    case Users.verify_login(email, password) do
       {:ok, user} ->
         conn
         |> put_session(:current_user_id, user.id)

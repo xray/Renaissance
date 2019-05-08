@@ -3,15 +3,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
   alias Renaissance.{Auction, Repo, Users}
   alias Plug.Test
 
-  test "GET /auctions redirects to login when not logged in" do
-    conn = get(build_conn(), "/auctions")
-    assert redirected_to(conn, 302) == "/login"
-  end
-
-  test "GET /auctions redirects to /login when not signed in" do
-    conn = get(build_conn(), "/auctions")
-    assert redirected_to(conn, 302) == "/login"
-  end
+  @valid_user_params %{email: "mail@mail.com", password: "password"}
 
   @valid_end %{
     day: 15,
@@ -35,16 +27,56 @@ defmodule RenaissanceWeb.AuctionControllerTest do
     price: "15.00"
   }
 
-  describe "create auction" do
-    setup %{conn: conn} do
-      user_params = %{email: "mail@mail.com", password: "password"}
-      {:ok, user} = Users.register_user(user_params)
-      {:ok, conn: Test.init_test_session(conn, current_user_id: user.id, current_user: user)}
+  describe "index/2" do
+    test "GET /auctions redirects to login when not logged in" do
+      conn = get(build_conn(), "/auctions")
+      assert redirected_to(conn, 302) == "/login"
     end
 
-    test "GET /auctions/new is accessible when logged in", %{conn: conn} do
-      conn = get(conn, "/auctions/new")
+    test "GET /auctions displays all auctions when signed in" do
+      {:ok, user} = Users.insert(@valid_user_params)
+
+      conn =
+        build_conn()
+        |> Test.init_test_session(current_user_id: user.id)
+        |> post("/auctions", @auction_one_params)
+        |> post("/auctions", @auction_two_params)
+        |> get("/auctions")
+
+      assert html_response(conn, 200) =~ @auction_one_params.title
+      assert html_response(conn, 200) =~ "$" <> @auction_one_params.price
+      assert html_response(conn, 200) =~ @auction_one_params.description
+
+      assert html_response(conn, 200) =~ @auction_two_params.title
+      assert html_response(conn, 200) =~ "$" <> @auction_two_params.price
+      assert html_response(conn, 200) =~ @auction_two_params.description
+
+      refute html_response(conn, 200) =~ ~s(class="countdown")
+    end
+  end
+
+  describe "new/2" do
+    test "GET /auctions/new redirects to login when not logged in" do
+      conn = get(build_conn(), "/auctions/new")
+      assert redirected_to(conn, 302) == "/login"
+    end
+
+    test "GET /auctions/new is accessible when logged in" do
+      {:ok, user} = Users.insert(@valid_user_params)
+
+      conn =
+        build_conn()
+        |> Test.init_test_session(current_user_id: user.id)
+        |> get("/auctions/new")
+
       assert html_response(conn, 200) =~ "Create an Auction"
+    end
+  end
+
+  describe "create/2" do
+    setup %{conn: conn} do
+      {:ok, user} = Users.insert(@valid_user_params)
+      {:ok, conn: Test.init_test_session(conn, current_user_id: user.id, current_user: user)}
     end
 
     test "POST /auctions with valid params creates an auction", %{conn: conn} do
@@ -59,23 +91,13 @@ defmodule RenaissanceWeb.AuctionControllerTest do
 
       assert html_response(conn, 200) =~ "in the future"
     end
+  end
 
-    test "GET /auctions displays all auctions when signed in", %{conn: conn} do
-      conn =
-        conn
-        |> post("/auctions", @auction_one_params)
-        |> post("/auctions", @auction_two_params)
-        |> get("/auctions")
-
-      assert html_response(conn, 200) =~ @auction_one_params.title
-      assert html_response(conn, 200) =~ "$" <> @auction_one_params.price
-      assert html_response(conn, 200) =~ @auction_one_params.description
-
-      assert html_response(conn, 200) =~ @auction_two_params.title
-      assert html_response(conn, 200) =~ "$" <> @auction_two_params.price
-      assert html_response(conn, 200) =~ @auction_two_params.description
-
-      refute html_response(conn, 200) =~ ~s(class="countdown")
+  describe "show/2" do
+    setup %{conn: conn} do
+      user_params = %{email: "mail@mail.com", password: "password"}
+      {:ok, user} = Users.insert(user_params)
+      {:ok, conn: Test.init_test_session(conn, current_user_id: user.id)}
     end
 
     test "GET /auctions/:id returns only the specified auction", %{conn: conn} do
@@ -140,8 +162,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
       auction_one_id = Repo.get_by(Auction, title: @auction_one_params.title).id
       conn = get(conn, "/auctions/#{auction_one_id}")
 
-      assert html_response(conn, 200) =~
-               ~s(type="text" value="#{@auction_one_params.title}")
+      assert html_response(conn, 200) =~ ~s(type="text" value="#{@auction_one_params.title}")
     end
 
     test "PUT /auction/:id for title", %{conn: conn} do
