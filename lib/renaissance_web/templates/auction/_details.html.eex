@@ -1,6 +1,6 @@
 <div class="mod-table">
   <table class="item-table">
-    <tr class="table-row"><td class="table-section table-left">Price:</td><td class="bold table-section table-right"><%= @auction.price %></td></tr>
+    <tr class="table-row"><td class="table-section table-left">Price:</td><td class="bold table-section table-right"><%= @current_price %></td></tr>
     <tr class="table-row"><td class="table-section table-left">Seller:</td><td class="bold table-section table-right"> <%= @auction.seller.email %></td></tr>
     <tr class="table-row">
       <td class="table-section table-left">End Date:</td>

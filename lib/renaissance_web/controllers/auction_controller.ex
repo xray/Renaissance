@@ -1,7 +1,7 @@
 defmodule RenaissanceWeb.AuctionController do
   use RenaissanceWeb, :controller
 
-  alias Renaissance.{Auctions, Bids, Helpers}
+  alias Renaissance.{Auction, Auctions, Bids, Helpers}
   alias RenaissanceWeb.Helpers.Auth
 
   def index(conn, _params) do
@@ -13,8 +13,9 @@ defmodule RenaissanceWeb.AuctionController do
   end
 
   def new(conn, _params) do
+    changeset = Auction.changeset(%Auction{})
     if Auth.signed_in?(conn) do
-      render(conn, "new.html", changeset: conn)
+      render(conn, "new.html", changeset: changeset)
     else
       redirect(conn, to: Routes.login_path(conn, :login))
     end
@@ -24,7 +25,7 @@ defmodule RenaissanceWeb.AuctionController do
     response =
       conn
       |> get_session(:current_user_id)
-      |> Auctions.insert(params)
+      |> Auctions.insert(params["auction"])
 
     case response do
       {:ok, _user} ->
@@ -41,14 +42,10 @@ defmodule RenaissanceWeb.AuctionController do
     if Auth.signed_in?(conn) do
       id = String.to_integer(id)
 
-      current_price =
-        (Bids.get_highest_bid_amount(id) || Auctions.get!(id).price.amount)
-        |> Helpers.Money.to_float()
-
       render(conn, "show.html", %{
         auction: Auctions.get!(id),
         user: Auth.current_user(conn),
-        current_price: current_price,
+        current_price: fetch_current_prices(id),
         changeset: conn
       })
     else
@@ -65,11 +62,28 @@ defmodule RenaissanceWeb.AuctionController do
       |> render("show.html", %{
         auction: Auctions.get!(id),
         user: Auth.current_user(conn),
+        current_price: fetch_current_prices(id),
         changeset: conn
       })
     else
       {:error, changeset} ->
         render(conn, "show.html", changeset: changeset)
     end
+  end
+
+  defp fetch_current_prices(id) do
+    current_price_float =
+      (Bids.get_highest_bid_amount(id) || Auctions.get!(id).price.amount)
+      |> Helpers.Money.to_float()
+
+    current_price_string =
+      (Bids.get_highest_bid_amount(id) || Auctions.get!(id).price.amount)
+      |> Money.new()
+      |> Money.to_string()
+
+    %{
+      as_string: current_price_string,
+      as_float: current_price_float
+    }
   end
 end

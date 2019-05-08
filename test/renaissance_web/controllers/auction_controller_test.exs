@@ -14,17 +14,21 @@ defmodule RenaissanceWeb.AuctionControllerTest do
   }
 
   @auction_one_params %{
-    title: "Test Title",
-    description: "Test description.",
-    end_auction_at: @valid_end,
-    price: "10.00"
+    auction: %{
+      title: "Test Title",
+      description: "Test description.",
+      end_auction_at: @valid_end,
+      price: "10.00"
+    }
   }
 
   @auction_two_params %{
-    title: "Test Two Title",
-    description: "Test two description.",
-    end_auction_at: %{@valid_end | day: @valid_end.day + 1},
-    price: "15.00"
+    auction: %{
+      title: "Test Two Title",
+      description: "Test two description.",
+      end_auction_at: %{@valid_end | day: @valid_end.day + 1},
+      price: "15.00"
+    }
   }
 
   describe "index/2" do
@@ -43,13 +47,13 @@ defmodule RenaissanceWeb.AuctionControllerTest do
         |> post("/auctions", @auction_two_params)
         |> get("/auctions")
 
-      assert html_response(conn, 200) =~ @auction_one_params.title
-      assert html_response(conn, 200) =~ "$" <> @auction_one_params.price
-      assert html_response(conn, 200) =~ @auction_one_params.description
+      assert html_response(conn, 200) =~ @auction_one_params.auction.title
+      assert html_response(conn, 200) =~ "$" <> @auction_one_params.auction.price
+      assert html_response(conn, 200) =~ @auction_one_params.auction.description
 
-      assert html_response(conn, 200) =~ @auction_two_params.title
-      assert html_response(conn, 200) =~ "$" <> @auction_two_params.price
-      assert html_response(conn, 200) =~ @auction_two_params.description
+      assert html_response(conn, 200) =~ @auction_two_params.auction.title
+      assert html_response(conn, 200) =~ "$" <> @auction_two_params.auction.price
+      assert html_response(conn, 200) =~ @auction_two_params.auction.description
 
       refute html_response(conn, 200) =~ ~s(class="countdown")
     end
@@ -86,8 +90,8 @@ defmodule RenaissanceWeb.AuctionControllerTest do
 
     test "POST /auctions rejects auction when end date is in the past", %{conn: conn} do
       invalid_datetime = %{@valid_end | year: "1999"}
-      invalid_params = %{@auction_one_params | end_auction_at: invalid_datetime}
-      conn = post(conn, "/auctions", invalid_params)
+      invalid_params = %{@auction_one_params.auction | end_auction_at: invalid_datetime}
+      conn = post(conn, "/auctions", %{auction: invalid_params})
 
       assert html_response(conn, 200) =~ "in the future"
     end
@@ -106,17 +110,17 @@ defmodule RenaissanceWeb.AuctionControllerTest do
         |> post("/auctions", @auction_one_params)
         |> post("/auctions", @auction_two_params)
 
-      auction_one_id = Repo.get_by(Auction, title: @auction_one_params.title).id
+      auction_one_id = Repo.get_by(Auction, title: @auction_one_params.auction.title).id
       conn = get(conn, "/auctions/#{auction_one_id}")
 
-      assert html_response(conn, 200) =~ @auction_one_params.title
-      refute html_response(conn, 200) =~ @auction_two_params.title
+      assert html_response(conn, 200) =~ @auction_one_params.auction.title
+      refute html_response(conn, 200) =~ @auction_two_params.auction.title
     end
 
     test "GET /auctions/:id returns more auction details than index", %{conn: conn} do
       conn = conn |> post("/auctions", @auction_one_params)
 
-      auction_one_id = Repo.get_by(Auction, title: @auction_one_params.title).id
+      auction_one_id = Repo.get_by(Auction, title: @auction_one_params.auction.title).id
       conn = get(conn, "/auctions/#{auction_one_id}")
 
       assert html_response(conn, 200) =~ ~s(class="countdown")
@@ -134,19 +138,19 @@ defmodule RenaissanceWeb.AuctionControllerTest do
       conn: conn
     } do
       conn = conn |> post("/auctions", @auction_one_params)
-      auction_one_id = Repo.get_by(Auction, title: @auction_one_params.title).id
+      auction_one_id = Repo.get_by(Auction, title: @auction_one_params.auction.title).id
       conn = get(conn, "/auctions/#{auction_one_id}")
 
       assert html_response(conn, 200) =~
-               ~s(type="text" value="#{@auction_one_params.description}")
+               ~s(type="text" value="#{@auction_one_params.auction.description}")
     end
 
     test "PUT /auction/:id for description", %{conn: conn} do
       conn = conn |> post("/auctions", @auction_one_params)
-      auction_id = Repo.get_by(Auction, title: @auction_one_params.title).id
+      auction_id = Repo.get_by(Auction, title: @auction_one_params.auction.title).id
       conn = get(conn, "/auctions/#{auction_id}")
 
-      updated_description = "Updated " <> @auction_one_params.description
+      updated_description = "Updated " <> @auction_one_params.auction.description
 
       conn =
         conn
@@ -159,18 +163,18 @@ defmodule RenaissanceWeb.AuctionControllerTest do
       conn: conn
     } do
       conn = conn |> post("/auctions", @auction_one_params)
-      auction_one_id = Repo.get_by(Auction, title: @auction_one_params.title).id
+      auction_one_id = Repo.get_by(Auction, title: @auction_one_params.auction.title).id
       conn = get(conn, "/auctions/#{auction_one_id}")
 
-      assert html_response(conn, 200) =~ ~s(type="text" value="#{@auction_one_params.title}")
+      assert html_response(conn, 200) =~ ~s(type="text" value="#{@auction_one_params.auction.title}")
     end
 
     test "PUT /auction/:id for title", %{conn: conn} do
       conn = conn |> post("/auctions", @auction_one_params)
-      auction_id = Repo.get_by(Auction, title: @auction_one_params.title).id
+      auction_id = Repo.get_by(Auction, title: @auction_one_params.auction.title).id
       conn = get(conn, "/auctions/#{auction_id}")
 
-      updated_title = "Updated " <> @auction_one_params.title
+      updated_title = "Updated " <> @auction_one_params.auction.title
 
       conn =
         conn
@@ -200,7 +204,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
     end
 
     test "GET /auction/:id a form for placing a bid is present", %{conn: conn} do
-      auction_id = Repo.get_by(Auction, title: @auction_one_params.title).id
+      auction_id = Repo.get_by(Auction, title: @auction_one_params.auction.title).id
 
       conn = get(conn, "/auctions/#{auction_id}")
 
