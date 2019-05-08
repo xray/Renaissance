@@ -162,8 +162,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
       auction_one_id = Repo.get_by(Auction, title: @auction_one_params.title).id
       conn = get(conn, "/auctions/#{auction_one_id}")
 
-      assert html_response(conn, 200) =~
-               ~s(type="text" value="#{@auction_one_params.title}")
+      assert html_response(conn, 200) =~ ~s(type="text" value="#{@auction_one_params.title}")
     end
 
     test "PUT /auction/:id for title", %{conn: conn} do

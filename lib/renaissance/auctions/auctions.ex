@@ -1,7 +1,6 @@
 defmodule Renaissance.Auctions do
-  import Ecto.Query
-  alias Renaissance.{Auction, Repo, Bids}
-  alias Renaissance.Helpers
+  import Ecto.{Query, Changeset}
+  alias Renaissance.{Auction, Bids, Helpers, Repo}
 
   def insert(user_id, params) do
     params =
@@ -19,7 +18,7 @@ defmodule Renaissance.Auctions do
     Repo.exists?(from(a in Auction, where: a.id == ^id))
   end
 
-  def update_auction(auction_id, params) do
+  def update(auction_id, params) do
     auction =
       Auction
       |> Repo.get!(auction_id)
