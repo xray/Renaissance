@@ -28,7 +28,7 @@ defmodule RenaissanceWeb.BidControllerTest do
         amount: "11.00"
       }
 
-      result = post(conn, "/bid", bid_params)
+      result = post(conn, "/bids", bid_params)
 
       assert get_flash(result, :info) == "Bid Placed!"
       assert redirected_to(result, 302) == "/auctions/#{auction_id}"
@@ -43,7 +43,7 @@ defmodule RenaissanceWeb.BidControllerTest do
         amount: "9"
       }
 
-      result = post(conn, "/bid", bid_params)
+      result = post(conn, "/bids", bid_params)
 
       assert get_flash(result, :error) == "must be greater than $10.00"
       assert redirected_to(result, 302) == "/auctions/#{auction_id}"
