@@ -4,9 +4,7 @@ defmodule Renaissance.Auctions do
 
   def insert(params) do
     params = Helpers.Money.to_money!(params, "price")
-
-    Auction.changeset(%Auction{}, params)
-    |> Repo.insert()
+    Auction.changeset(%Auction{}, params) |> Repo.insert()
   end
 
   def exists?(nil), do: false
@@ -23,8 +21,7 @@ defmodule Renaissance.Auctions do
       title: params["title"] || auction.title
     }
 
-    change(auction, args)
-    |> Repo.update()
+    change(auction, args) |> Repo.update()
   end
 
   def get!(id) do
