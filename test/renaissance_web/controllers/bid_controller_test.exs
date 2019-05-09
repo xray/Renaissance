@@ -1,6 +1,6 @@
 defmodule RenaissanceWeb.BidControllerTest do
   use RenaissanceWeb.ConnCase
-  alias Renaissance.{Auction, Auctions, Users, Repo}
+  alias Renaissance.{Auction, Auctions, Repo, Users}
   alias Plug.Test
 
   @valid_auction %{
@@ -47,6 +47,59 @@ defmodule RenaissanceWeb.BidControllerTest do
 
       assert get_flash(result, :error) == "must be greater than $10.00"
       assert redirected_to(result, 302) == "/auctions/#{auction_id}"
+    end
+  end
+
+  describe "concurrent_bids" do
+    test "doesn't place multiple bids at the same price", %{conn: conn} do
+      {:ok, seller} =
+        Users.insert(%{
+          email: "seller@seller.com",
+          password: "password"
+        })
+
+      {:ok, auction} = Auctions.insert(Map.put(@valid_auction, "seller_id", seller.id))
+
+      {:ok, bidder_1} =
+        Users.insert(%{
+          email: "bidder1@bidder.com",
+          password: "password"
+        })
+
+      {:ok, bidder_2} =
+        Users.insert(%{
+          email: "bidder2@bidder.com",
+          password: "password"
+        })
+
+      bidder_1_conn = Test.init_test_session(conn, current_user_id: bidder_1.id)
+      bidder_2_conn = Test.init_test_session(conn, current_user_id: bidder_2.id)
+
+      bid_1 =
+        Task.async(fn ->
+          bidder_1_conn
+          |> post("/bids", %{
+            auction_id: Integer.to_string(auction.id),
+            amount: "11"
+          })
+        end)
+
+      bid_2 =
+        Task.async(fn ->
+          bidder_2_conn
+          |> post("/bids", %{
+            auction_id: Integer.to_string(auction.id),
+            amount: "11"
+          })
+        end)
+
+      Task.await(bid_1)
+      Task.await(bid_2)
+
+      refute Ecto.assoc(auction, :bids) |> Repo.all() |> Enum.map(&Map.get(&1, :amount)) == [
+               %Money{amount: 1100, currency: :USD},
+               %Money{amount: 1100, currency: :USD}
+             ]
     end
   end
 end
