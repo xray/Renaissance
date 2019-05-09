@@ -76,7 +76,7 @@ defmodule Renaissance.Test.MoneyTest do
 
       result = Helpers.Money.to_money!(to_convert, :amount).amount
 
-      assert Money.compare(control, result)  == 0
+      assert Money.compare(control, result) == 0
     end
 
     test "given a string of '.5' it returns a money object with a value of 50" do

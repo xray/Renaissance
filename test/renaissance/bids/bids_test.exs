@@ -2,31 +2,22 @@ defmodule Renaissance.Test.BidsTest do
   use Renaissance.DataCase
   alias Renaissance.{Auctions, Bid, Bids, Helpers, Repo, Users}
 
-  @auction_params %{
-    "title" => "Test Title",
-    "description" => "Test description.",
-    "end_auction_at" => %{
-      "day" => 15,
-      "hour" => 14,
-      "minute" => 3,
-      "month" => 4,
-      "year" => 3019
-    },
-    "price" => "1.00"
-  }
-
   setup _context do
     {:ok, seller} = Users.insert(%{email: "seller@mail.com", password: "password"})
-    {:ok, auction} = Auctions.insert(seller.id, @auction_params)
     {:ok, bidder} = Users.insert(%{email: "bidder@mail.com", password: "password"})
 
-    [
-      params: %{
-        "bidder_id" => bidder.id,
-        "auction_id" => auction.id,
-        "amount" => "1.01"
-      }
-    ]
+    end_time = %{"day" => 15, "hour" => 14, "minute" => 3, "month" => 4, "year" => 3019}
+
+    {:ok, auction} =
+      Auctions.insert(%{
+        "title" => "Test Title",
+        "description" => "Test description.",
+        "end_auction_at" => end_time,
+        "price" => "1.00",
+        "seller_id" => seller.id
+      })
+
+    [params: %{"bidder_id" => bidder.id, "auction_id" => auction.id, "amount" => "1.01"}]
   end
 
   describe "insert/1" do

@@ -3,44 +3,32 @@ defmodule RenaissanceWeb.BidControllerTest do
   alias Renaissance.{Auction, Auctions, Users, Repo}
   alias Plug.Test
 
-  @valid_end %{
-    day: 15,
-    hour: 14,
-    minute: 3,
-    month: 4,
-    year: 3019
-  }
-
   @valid_auction %{
     "title" => "Test Title",
     "description" => "Test description.",
-    "end_auction_at" => @valid_end,
+    "end_auction_at" => %{day: 15, hour: 14, minute: 3, month: 4, year: 3019},
     "price" => "10.00"
   }
 
   describe "create/2" do
     setup %{conn: conn} do
-      seller_params = %{email: "seller@seller.com", password: "password"}
-      {:ok, user_seller} = Users.insert(seller_params)
-      Auctions.insert(user_seller.id, @valid_auction)
+      {:ok, bidder} = Users.insert(%{email: "bidder@bidder.com", password: "password"})
+      {:ok, seller} = Users.insert(%{email: "seller@seller.com", password: "password"})
+      Auctions.insert(Map.put(@valid_auction, "seller_id", seller.id))
 
-      bidder_params = %{email: "bidder@bidder.com", password: "password"}
-      {:ok, user_bidder} = Users.insert(bidder_params)
-
-      {:ok, conn: Test.init_test_session(conn, current_user_id: user_bidder.id)}
+      {:ok, conn: Test.init_test_session(conn, current_user_id: bidder.id)}
     end
 
     test "places a bid on an auction", %{conn: conn} do
       auction_id = Repo.get_by(Auction, title: @valid_auction["title"]).id
-      user_id = Plug.Conn.get_session(conn, :current_user_id)
 
-      result =
-        conn
-        |> post("/bid", %{
-          auction_id: Integer.to_string(auction_id),
-          bidder_id: user_id,
-          amount: "11.00"
-        })
+      bid_params = %{
+        auction_id: Integer.to_string(auction_id),
+        bidder_id: Plug.Conn.get_session(conn, :current_user_id),
+        amount: "11.00"
+      }
+
+      result = post(conn, "/bid", bid_params)
 
       assert get_flash(result, :info) == "Bid Placed!"
       assert redirected_to(result, 302) == "/auctions/#{auction_id}"
@@ -48,15 +36,14 @@ defmodule RenaissanceWeb.BidControllerTest do
 
     test "doesn't place bid that is under current price", %{conn: conn} do
       auction_id = Repo.get_by(Auction, title: @valid_auction["title"]).id
-      user_id = Plug.Conn.get_session(conn, :current_user_id)
 
-      result =
-        conn
-        |> post("/bid", %{
-          auction_id: Integer.to_string(auction_id),
-          bidder_id: user_id,
-          amount: "9"
-        })
+      bid_params = %{
+        auction_id: Integer.to_string(auction_id),
+        bidder_id: Plug.Conn.get_session(conn, :current_user_id),
+        amount: "9"
+      }
+
+      result = post(conn, "/bid", bid_params)
 
       assert get_flash(result, :error) == "must be greater than $10.00"
       assert redirected_to(result, 302) == "/auctions/#{auction_id}"

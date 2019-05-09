@@ -1,7 +1,7 @@
 defmodule RenaissanceWeb.AuctionController do
   use RenaissanceWeb, :controller
 
-  alias Renaissance.{Auction, Auctions, Helpers}
+  alias Renaissance.{Auction, Auctions}
   alias RenaissanceWeb.Helpers.Auth
 
   def index(conn, _params) do
@@ -22,13 +22,11 @@ defmodule RenaissanceWeb.AuctionController do
     end
   end
 
-  def create(conn, params) do
-    response =
-      conn
-      |> get_session(:current_user_id)
-      |> Auctions.insert(params["auction"])
+  def create(conn, %{"auction" => auction}) do
+    seller_id = Auth.current_user(conn).id
+    params = Map.put(auction, "seller_id", seller_id)
 
-    case response do
+    case Auctions.insert(params) do
       {:ok, _user} ->
         conn
         |> put_flash(:info, "Auction Created!")
@@ -46,7 +44,7 @@ defmodule RenaissanceWeb.AuctionController do
       render(conn, "show.html", %{
         auction: Auctions.get!(id),
         user: Auth.current_user(conn),
-        current_price: fetch_current_prices(id),
+        current_price: Auctions.get_current_amount(id),
         changeset: conn
       })
     else
@@ -63,24 +61,12 @@ defmodule RenaissanceWeb.AuctionController do
       |> render("show.html", %{
         auction: Auctions.get!(id),
         user: Auth.current_user(conn),
-        current_price: fetch_current_prices(id),
+        current_price: Auctions.get_current_amount(id),
         changeset: conn
       })
     else
       {:error, changeset} ->
         render(conn, "show.html", changeset: changeset)
     end
-  end
-
-  defp fetch_current_prices(id) do
-    current = Auctions.get_current_amount(id)
-
-    as_float = Helpers.Money.to_float(current)
-    as_string = Money.to_string(current)
-
-    %{
-      as_string: as_string,
-      as_float: as_float
-    }
   end
 end

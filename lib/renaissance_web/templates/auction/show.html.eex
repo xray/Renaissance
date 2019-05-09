@@ -3,7 +3,7 @@
   <%= if @user.email != @auction.seller.email do %>
     <h1 class="lbl-group"><%= @auction.title %></h1>
     <h4 class="mod-txt_secondary"><%= @auction.description %></h4>
-    <%= render("_details.html", auction: @auction, current_price: @current_price.as_string) %>
+    <%= render("_details.html", auction: @auction, current_price: @current_price) %>
     <%= form_for @changeset, Routes.bid_path(@conn, :create), fn f -> %>
       <div class="form-section">
         <%= hidden_input f, :auction_id, value: @auction.id%>
@@ -11,7 +11,7 @@
         <div class="form-section-horizontal">
           <p class="dollar-sign">$</p>
           <%= number_input f, :amount, class: "txt-form",
-          required: true, min: @current_price.as_float, step: 0.01, value: @current_price.as_float + 1.00 %>
+          required: true, min: float_amount(@current_price), step: 0.01, value: float_amount(@current_price) + 1.00 %>
         </div>
         <%= error_tag f, :amount %>
       </div>
@@ -31,7 +31,7 @@
       <%= text_input f, :description, class: "mod-txt_secondary edit-description auction-editable",
       value: @auction.description, title: "Click here to edit the auction description.", required: true %>
       <%= error_tag f, :description %>
-      <%= render("_details.html", auction: @auction, current_price: @current_price.as_string) %>
+      <%= render("_details.html", auction: @auction, current_price: @current_price) %>
       <%= live_render(@conn, RenaissanceWeb.AuctionsLive.Show, session: %{auction: @auction}) %>
       <div class="nav-container">
         <%= link "back", to: Routes.auction_path(@conn, :index), class: "button" %>
@@ -42,3 +42,4 @@
   <% end %>
   </div>
 </div>
+  

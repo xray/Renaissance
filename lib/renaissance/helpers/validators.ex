@@ -15,7 +15,7 @@ defmodule Renaissance.Helpers.Validators do
   end
 
   defp get_current_amount(changeset, current) do
-    if !is_nil(current) && is_integer(current) do
+    if !is_nil(current) and is_integer(current) do
       Money.new(current)
     else
       get_change(changeset, :auction_id)
@@ -25,8 +25,7 @@ defmodule Renaissance.Helpers.Validators do
 
   def validate_bidder(changeset, field) do
     bidder_id = get_change(changeset, field)
-    auction_id = get_change(changeset, :auction_id)
-    seller_id = Auctions.get_seller_id(auction_id)
+    seller_id = get_change(changeset, :auction_id) |> Auctions.get_seller_id()
 
     if seller_id == bidder_id do
       add_error(changeset, field, "can't bid on the item you're selling")
@@ -38,12 +37,10 @@ defmodule Renaissance.Helpers.Validators do
   def validate_open(changeset, field) do
     auction_id = get_change(changeset, :auction_id)
 
-    cond do
-      Auctions.exists?(auction_id) and !Auctions.open?(auction_id) ->
-        add_error(changeset, field, "auction is not open")
-
-      true ->
-        changeset
+    if Auctions.exists?(auction_id) and !Auctions.open?(auction_id) do
+      add_error(changeset, field, "auction is not open")
+    else
+      changeset
     end
   end
 end

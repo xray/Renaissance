@@ -2,11 +2,8 @@ defmodule Renaissance.Auctions do
   import Ecto.{Query, Changeset}
   alias Renaissance.{Auction, Bids, Helpers, Repo}
 
-  def insert(user_id, params) do
-    params =
-      params
-      |> Helpers.Money.to_money!("price")
-      |> Map.put("seller_id", user_id)
+  def insert(params) do
+    params = Helpers.Money.to_money!(params, "price")
 
     Auction.changeset(%Auction{}, params)
     |> Repo.insert()
@@ -18,15 +15,15 @@ defmodule Renaissance.Auctions do
     Repo.exists?(from(a in Auction, where: a.id == ^id))
   end
 
-  def update(auction_id, params) do
-    auction =
-      Auction
-      |> Repo.get!(auction_id)
+  def update(id, params) do
+    auction = get!(id)
 
-    change(auction, %{
+    args = %{
       description: params["description"] || auction.description,
       title: params["title"] || auction.title
-    })
+    }
+
+    change(auction, args)
     |> Repo.update()
   end
 
@@ -57,10 +54,13 @@ defmodule Renaissance.Auctions do
   def get_current_amount(nil), do: nil
 
   def get_current_amount(id) do
-    starting = get_starting_amount(id) |> Helpers.Money.to_money()
-    current = Bids.get_highest_bid_amount(id) |> Helpers.Money.to_money()
+    current =
+      Bids.get_highest_bid_amount(id)
+      |> Helpers.Money.to_money()
 
-    Helpers.Money.money_max(starting, current)
+    get_starting_amount(id)
+    |> Helpers.Money.to_money()
+    |> Helpers.Money.money_max(current)
   end
 
   def get_all() do

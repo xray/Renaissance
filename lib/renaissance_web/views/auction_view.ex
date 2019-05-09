@@ -1,5 +1,6 @@
 defmodule RenaissanceWeb.AuctionView do
   use RenaissanceWeb, :view
+  alias Renaissance.Helpers
 
   def default_end do
     current = DateTime.utc_now()
@@ -12,4 +13,6 @@ defmodule RenaissanceWeb.AuctionView do
       year: current.year
     }
   end
+
+  def float_amount(amount), do: Helpers.Money.to_float(amount)
 end

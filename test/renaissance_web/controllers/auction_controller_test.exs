@@ -1,17 +1,11 @@
 defmodule RenaissanceWeb.AuctionControllerTest do
   use RenaissanceWeb.ConnCase
-  alias Renaissance.{Auction, Repo, Users, Auctions}
+  alias Renaissance.{Auction, Auctions, Repo, Users}
   alias Plug.Test
 
   @valid_user_params %{email: "mail@mail.com", password: "password"}
 
-  @valid_end %{
-    day: 15,
-    hour: 14,
-    minute: 3,
-    month: 4,
-    year: 3019
-  }
+  @valid_end %{day: 15, hour: 14, minute: 3, month: 4, year: 3019}
 
   @auction_one_params %{
     auction: %{
@@ -166,7 +160,8 @@ defmodule RenaissanceWeb.AuctionControllerTest do
       auction_one_id = Repo.get_by(Auction, title: @auction_one_params.auction.title).id
       conn = get(conn, "/auctions/#{auction_one_id}")
 
-      assert html_response(conn, 200) =~ ~s(type="text" value="#{@auction_one_params.auction.title}")
+      assert html_response(conn, 200) =~
+               ~s(type="text" value="#{@auction_one_params.auction.title}")
     end
 
     test "PUT /auction/:id for title", %{conn: conn} do
@@ -186,21 +181,18 @@ defmodule RenaissanceWeb.AuctionControllerTest do
 
   describe "show/2 when the auction does not belong to the user" do
     setup %{conn: conn} do
-      auction_info = %{
+      {:ok, seller} = Users.insert(%{email: "seller@seller.com", password: "password"})
+      {:ok, bidder} = Users.insert(%{email: "bidder@bidder.com", password: "password"})
+
+      Auctions.insert(%{
         "title" => "Test Title",
         "description" => "Test description.",
         "end_auction_at" => @valid_end,
-        "price" => "10.00"
-      }
+        "price" => "10.00",
+        "seller_id" => seller.id
+      })
 
-      seller_params = %{email: "seller@seller.com", password: "password"}
-      {:ok, user_seller} = Users.insert(seller_params)
-      Auctions.insert(user_seller.id, auction_info)
-
-      bidder_params = %{email: "bidder@bidder.com", password: "password"}
-      {:ok, user_bidder} = Users.insert(bidder_params)
-
-      {:ok, conn: Test.init_test_session(conn, current_user_id: user_bidder.id)}
+      {:ok, conn: Test.init_test_session(conn, current_user_id: bidder.id)}
     end
 
     test "GET /auction/:id a form for placing a bid is present", %{conn: conn} do

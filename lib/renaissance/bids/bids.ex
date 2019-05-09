@@ -28,7 +28,7 @@ defmodule Renaissance.Bids do
 
   def get_highest_bid(auction_id) do
     highest_amount = get_highest_bid_amount(auction_id)
-    # and b.created_at <= ^end_action_at
+
     query =
       from b in Bid,
         where: b.auction_id == ^auction_id and b.amount == type(^highest_amount, b.amount),
