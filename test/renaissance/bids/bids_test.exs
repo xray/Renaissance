@@ -115,10 +115,16 @@ defmodule Renaissance.Test.BidsTest do
       {:ok, bidder_3} = Users.insert(%{email: "bidder3@mail.com", password: "password3"})
 
       :timer.sleep(100)
-      bid_params |> Map.replace!("bidder_id", bidder_2.id) |> place_bid(@eight_oh_one)
+
+      bid_params
+      |> Map.replace!("bidder_id", bidder_2.id)
+      |> place_bid(@eight_oh_one)
 
       :timer.sleep(400)
-      bid_params |> Map.replace!("bidder_id", bidder_3.id) |> place_bid(@eight_oh_one)
+
+      bid_params
+      |> Map.replace!("bidder_id", bidder_3.id)
+      |> place_bid(@eight_oh_one)
 
       result = Bids.get_highest_bid(auction_id)
 
