@@ -209,6 +209,17 @@ body {
   margin: 0;
 }
 
+.item-table tr {
+  display: flex;
+  border-bottom: 0.1rem solid #e1e1e1;
+}
+
+.item-table tr td {
+  display: flex;
+  padding: 0;
+  border: 0;
+}
+
 .countdown {
   display: flex;
   flex-direction: column;
@@ -228,17 +239,6 @@ body {
 
 .table-left {
   margin-right: .5rem;
-}
-
-.table-section {
-  display: flex;
-  padding: 0;
-  border: 0;
-}
-
-.table-row {
-  display: flex;
-  border-bottom: 0.1rem solid #e1e1e1;
 }
 
 tr:first-child {
