@@ -101,5 +101,118 @@ defmodule RenaissanceWeb.BidControllerTest do
                %Money{amount: 1100, currency: :USD}
              ]
     end
+
+    test "requires bid to be greater than current price", %{conn: conn} do
+      {:ok, seller} =
+        Users.insert(%{
+          email: "seller@seller.com",
+          password: "password"
+        })
+
+      {:ok, auction} = Auctions.insert(Map.put(@valid_auction, "seller_id", seller.id))
+
+      {:ok, bidder_1} =
+        Users.insert(%{
+          email: "bidder1@bidder.com",
+          password: "password"
+        })
+
+      {:ok, bidder_2} =
+        Users.insert(%{
+          email: "bidder2@bidder.com",
+          password: "password"
+        })
+
+      bidder_1_conn = Test.init_test_session(conn, current_user_id: bidder_1.id)
+      bidder_2_conn = Test.init_test_session(conn, current_user_id: bidder_2.id)
+
+      bid_1 =
+        Task.async(fn ->
+          bidder_1_conn
+          |> post("/bids", %{
+            auction_id: Integer.to_string(auction.id),
+            amount: "11"
+          })
+          |> get_flash(:error)
+        end)
+
+      bid_2 =
+        Task.async(fn ->
+          bidder_2_conn
+          |> post("/bids", %{
+            auction_id: Integer.to_string(auction.id),
+            amount: "11"
+          })
+          |> get_flash(:error)
+        end)
+
+      flash_1 = Task.await(bid_1)
+      flash_2 = Task.await(bid_2)
+
+      assert "must be greater than $11.00" in [flash_1, flash_2]
+    end
+
+    test "bid history should be always increasing in price", %{conn: conn} do
+      import Ecto.Query
+
+      {:ok, seller} =
+        Users.insert(%{
+          email: "seller@seller.com",
+          password: "password"
+        })
+
+      {:ok, auction} = Auctions.insert(Map.put(@valid_auction, "seller_id", seller.id))
+
+      {:ok, bidder_1} =
+        Users.insert(%{
+          email: "bidder1@bidder.com",
+          password: "password"
+        })
+
+      {:ok, bidder_2} =
+        Users.insert(%{
+          email: "bidder2@bidder.com",
+          password: "password"
+        })
+
+      bidder_1_conn = Test.init_test_session(conn, current_user_id: bidder_1.id)
+      bidder_2_conn = Test.init_test_session(conn, current_user_id: bidder_2.id)
+
+      bidder_1_conn
+      |> post("/bids", %{
+        auction_id: Integer.to_string(auction.id),
+        amount: "12"
+      })
+
+      bid_1 =
+        Task.async(fn ->
+          bidder_1_conn
+          |> post("/bids", %{
+            auction_id: Integer.to_string(auction.id),
+            amount: "14"
+          })
+        end)
+
+      bid_2 =
+        Task.async(fn ->
+          bidder_2_conn
+          |> post("/bids", %{
+            auction_id: Integer.to_string(auction.id),
+            amount: "13"
+          })
+        end)
+
+      Task.await(bid_1)
+      Task.await(bid_2)
+
+      refute Ecto.assoc(auction, :bids)
+             |> order_by(asc: :created_at)
+             |> Repo.all()
+             |> Enum.map(&Map.get(&1, :amount)) == [
+               %Money{amount: 1200, currency: :USD},
+               %Money{amount: 1400, currency: :USD},
+               %Money{amount: 1300, currency: :USD}
+             ]
+    end
   end
 end

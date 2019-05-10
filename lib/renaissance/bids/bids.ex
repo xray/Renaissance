@@ -1,10 +1,12 @@
 defmodule Renaissance.Bids do
   import Ecto.Query
+  import Ecto.Changeset
   alias Renaissance.{Bid, Helpers, Repo}
 
   def insert(params) do
     params = Helpers.Money.to_money!(params, "amount")
-    Bid.changeset(%Bid{}, params) |> Repo.insert()
+
+    lock_update(params)
   end
 
   def exists(nil), do: nil
@@ -49,5 +51,28 @@ defmodule Renaissance.Bids do
     |> preload(:bidder)
     |> preload(:auction)
     |> Repo.get!(id)
+  end
+
+  defp lock_update(params) do
+    Repo.transaction(fn ->
+      _ =
+        Bid
+        |> select(1)
+        |> limit(1)
+        |> lock("FOR UPDATE")
+        |> Repo.one()
+
+      Bid.changeset(%Bid{}, params)
+      |> Repo.insert()
+    end)
+    |> case do
+      {:ok, result} -> result
+      {:error, :rollback} -> {
+        :error, 
+        Bid.changeset(%Bid{}, params)
+        |> Ecto.Changeset.add_error(:auction, "An error occured, your bid was not placed.")
+      }
+      {:error, error} -> error
+    end
   end
 end
