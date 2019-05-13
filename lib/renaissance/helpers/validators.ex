@@ -1,7 +1,6 @@
 defmodule Renaissance.Helpers.Validators do
   import Ecto.Changeset
-  alias Renaissance.Helpers
-  alias Renaissance.Auctions
+  alias Renaissance.{Auctions, Helpers}
 
   def validate_amount(changeset, field, current \\ nil) do
     proposed = get_change(changeset, field)

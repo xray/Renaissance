@@ -28,6 +28,7 @@ defmodule Renaissance.Auctions do
     Auction
     |> preload(:seller)
     |> Repo.get!(id)
+    |> Map.put(:current_amount, get_current_amount(id))
   end
 
   def get_seller_id(nil), do: nil
@@ -61,9 +62,12 @@ defmodule Renaissance.Auctions do
   end
 
   def get_all() do
-    Auction
-    |> preload(:seller)
-    |> Repo.all()
+    auctions =
+      Auction
+      |> preload(:seller)
+      |> Repo.all()
+
+    for auction <- auctions, do: Map.put(auction, :current_amount, get_current_amount(auction.id))
   end
 
   def open?(id) do

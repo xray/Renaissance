@@ -1,7 +1,7 @@
 <a class="auction-container" href="<%= Routes.auction_path(@conn, :show, @auction) %>">
   <h4 class="auction-title"><%= @auction.title %></h4>
   <p class="auction-description"><%= @auction.description %></p>
-  <li>Price: <%= @auction.price %></li>
+  <li>Price: <%= @auction.current_amount %></li>
   <li>Seller: <%= @auction.seller.email %></li>
   <li>End Date: <%= @auction.end_auction_at %></li>
 </a>

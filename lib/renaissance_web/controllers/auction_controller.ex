@@ -44,7 +44,6 @@ defmodule RenaissanceWeb.AuctionController do
       render(conn, "show.html", %{
         auction: Auctions.get!(id),
         user: Auth.current_user(conn),
-        current_price: Auctions.get_current_amount(id),
         changeset: conn
       })
     else
@@ -61,7 +60,6 @@ defmodule RenaissanceWeb.AuctionController do
       |> render("show.html", %{
         auction: Auctions.get!(id),
         user: Auth.current_user(conn),
-        current_price: Auctions.get_current_amount(id),
         changeset: conn
       })
     else
