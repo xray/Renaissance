@@ -51,21 +51,9 @@ defmodule Renaissance.Bids do
   def get_highest_bid(nil), do: nil
 
   def get_highest_bid(auction_id) do
-    highest_amount = get_highest_bid_amount(auction_id)
-
-    query =
-      from b in Bid,
-        where: b.auction_id == ^auction_id and b.amount == type(^highest_amount, b.amount),
-        order_by: [asc: b.created_at],
-        select: %{
-          id: b.id,
-          amount: b.amount,
-          created_at: b.created_at,
-          bidder_id: b.bidder_id,
-          auction_id: b.auction_id
-        }
-
-    Repo.one(query)
+    Bid.highest()
+    |> where([b], b.auction_id == ^auction_id)
+    |> Repo.one()
   end
 
   def get!(id) do

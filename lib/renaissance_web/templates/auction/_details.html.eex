@@ -1,6 +1,6 @@
 <div class="mod-table">
   <table class="item-table">
-    <tr><td class="table-left">Price:</td><td class="bold table-right"><%= @auction.current_amount %></td></tr>
+    <tr><td class="table-left">Price:</td><td class="bold table-right"><%= @auction.highest_bid || @auction.price %></td></tr>
     <tr><td class="table-left">Seller:</td><td class="bold table-right"> <%= @auction.seller.email %></td></tr>
     <tr>
       <td class="table-left">End Date:</td>

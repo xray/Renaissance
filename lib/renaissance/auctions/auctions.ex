@@ -1,6 +1,6 @@
 defmodule Renaissance.Auctions do
   import Ecto.{Query, Changeset}
-  alias Renaissance.{Auction, Bids, Helpers, Repo}
+  alias Renaissance.{Auction, Bids, Bid, Helpers, Repo}
 
   def insert(params) do
     params = Helpers.Money.to_money!(params, "price")
@@ -27,8 +27,8 @@ defmodule Renaissance.Auctions do
   def get!(id) do
     Auction
     |> preload(:seller)
+    |> preload(highest_bid: ^Bid.highest())
     |> Repo.get!(id)
-    |> Map.put(:current_amount, get_current_amount(id))
   end
 
   def get_seller_id(nil), do: nil
@@ -62,12 +62,10 @@ defmodule Renaissance.Auctions do
   end
 
   def get_all() do
-    auctions =
-      Auction
-      |> preload(:seller)
-      |> Repo.all()
-
-    for auction <- auctions, do: Map.put(auction, :current_amount, get_current_amount(auction.id))
+    Auction
+    |> preload(:seller)
+    |> preload(highest_bid: ^Bid.highest())
+    |> Repo.all()
   end
 
   def open?(id) do

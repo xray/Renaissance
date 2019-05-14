@@ -14,6 +14,7 @@ defmodule Renaissance.Auction do
     field :end_auction_at, :utc_datetime
     belongs_to :seller, User
     has_many :bids, Bid
+    has_one :highest_bid, Bid
 
     timestamps(type: :utc_datetime)
   end

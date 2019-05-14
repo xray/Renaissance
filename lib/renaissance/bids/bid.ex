@@ -1,6 +1,7 @@
 defmodule Renaissance.Bid do
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
   alias Renaissance.{Auction, User}
   alias Renaissance.Helpers.Validators
 
@@ -27,5 +28,18 @@ defmodule Renaissance.Bid do
     |> Validators.validate_amount(:amount)
     |> Validators.validate_bidder(:bidder_id)
     |> Validators.validate_open(:amount)
+  end
+
+  def highest do
+    highest_bids =
+      from(b in __MODULE__,
+        group_by: b.auction_id,
+        select: %{auction_id: b.auction_id, amount: max(b.amount)}
+      )
+
+    from(b in __MODULE__,
+      join: b2 in subquery(highest_bids),
+      on: b.auction_id == b2.auction_id and b.amount == b2.amount
+    )
   end
 end
