@@ -128,11 +128,10 @@ defmodule RenaissanceWeb.AuctionControllerTest do
       end
     end
 
-    test "GET /auctions/:id when the user is the seller the description is editable", %{
-      conn: conn
-    } do
-      conn = conn |> post("/auctions", @auction_one_params)
+    test "GET /auctions/:id description is editable when viewed by the seller", %{conn: conn} do
+      conn = post(conn, "/auctions", @auction_one_params)
       auction_one_id = Repo.get_by(Auction, title: @auction_one_params.auction.title).id
+
       conn = get(conn, "/auctions/#{auction_one_id}")
 
       assert html_response(conn, 200) =~
@@ -171,9 +170,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
 
       updated_title = "Updated " <> @auction_one_params.auction.title
 
-      conn =
-        conn
-        |> put("/auctions/#{auction_id}", %{title: updated_title})
+      conn = put(conn, "/auctions/#{auction_id}", %{title: updated_title})
 
       assert get_flash(conn, :info) == "Auction Updated!"
     end
