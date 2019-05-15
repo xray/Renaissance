@@ -14,5 +14,19 @@ defmodule RenaissanceWeb.AuctionView do
     }
   end
 
-  def float_amount(amount), do: Helpers.Money.to_float(amount)
+  def display_value(auction) do
+    if is_nil(auction.highest_bid) do
+      auction.price
+    else
+      auction.highest_bid.amount
+    end
+  end
+
+  def float_value(auction) do
+    if is_nil(auction.highest_bid) do
+      Helpers.Money.to_float(auction.price)
+    else
+      Helpers.Money.to_float(auction.highest_bid.amount)
+    end
+  end
 end

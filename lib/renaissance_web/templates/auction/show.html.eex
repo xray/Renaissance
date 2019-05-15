@@ -11,7 +11,8 @@
         <div class="form-section-horizontal">
           <p class="dollar-sign">$</p>
           <%= number_input f, :amount, class: "txt-form",
-          required: true, min: float_amount(@auction.highest_bid || @auction.price), step: 0.01, value: float_amount(@auction.highest_bid || @auction.price) + 1.00 %>
+          required: true, min: float_value(@auction), 
+          step: 0.01, value: float_value(@auction) + 1.00 %>
         </div>
         <%= error_tag f, :amount %>
       </div>
