@@ -4,16 +4,17 @@ defmodule Renaissance.Auction do
   alias Renaissance.{User, Bid}
   alias Renaissance.Helpers.Validators
 
-  @required_fields ~w(title description seller_id price end_auction_at)a
+  @required_fields ~w(title description seller_id starting_amount end_auction_at)a
   @optional_fields ~w()a
 
   schema "auctions" do
     field :title, :string
     field :description, :string
-    field :price, Money.Ecto.Amount.Type
+    field :starting_amount, Money.Ecto.Amount.Type
     field :end_auction_at, :utc_datetime
     belongs_to :seller, User
     has_many :bids, Bid
+    has_one :highest_bid, Bid
 
     timestamps(type: :utc_datetime)
   end
@@ -24,7 +25,7 @@ defmodule Renaissance.Auction do
     |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
     |> foreign_key_constraint(:seller_id, name: :auctions_user_id_fkey)
-    |> Validators.validate_amount(:price, 0)
+    |> Validators.validate_starting_amount()
     |> validate_end_datetime()
   end
 

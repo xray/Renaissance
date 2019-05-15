@@ -3,14 +3,14 @@ defmodule Renaissance.Helpers.Money do
   defp extract_amount(string), do: string
 
   def to_money!(params, name) do
-    amount =
-      extract_amount(params[name])
-      |> String.replace(".", "")
-      |> String.to_integer()
-      |> Money.new()
-
+    {f, _} = Float.parse("0#{extract_amount(params[name])}")
+    s = :erlang.float_to_binary(f, decimals: 2)
+    amount = Money.parse!(s)
     Map.replace!(params, name, amount)
   end
+
+  def to_float(%Money{} = m), do: m.amount / 100
+  def to_float(value), do: value / 100
 
   def money?(%Money{}), do: true
   def money?(p), do: is_integer(p)

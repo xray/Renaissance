@@ -19,9 +19,10 @@ defmodule RenaissanceWeb.AuctionsLive.Show do
     ~L"""
     <div class="countdown">
       <%= if @time_remaining == 0 do %>
-        Auction is closed.
+        <span class=lbl-count-text>Auction is closed.</span>
       <% else %>
-        Auction ends in<br><%= @time_remaining %>
+        <span class=lbl-count-text>Auction ends in</span>
+        <span class="count-text"><%= @time_remaining %></span>
       <% end %>
     </div>
     """

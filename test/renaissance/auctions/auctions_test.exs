@@ -1,59 +1,57 @@
 defmodule Renaissance.Test.AuctionsTest do
   use Renaissance.DataCase
-  alias Renaissance.{Auction, Auctions, Repo, Users}
-
-  @valid_end %{
-    day: "15",
-    hour: "14",
-    minute: "3",
-    month: "4",
-    year: "3019"
-  }
-
-  @auction_one %{
-    "title" => "Test Title",
-    "description" => "Test description.",
-    "end_auction_at" => @valid_end,
-    "price" => "10.00"
-  }
-
-  @auction_two %{
-    "title" => "Test Title Two",
-    "description" => "Test description two.",
-    "end_auction_at" => @valid_end,
-    "price" => "15.00"
-  }
+  alias Renaissance.{Auctions, Helpers, Users}
 
   setup _context do
-    user_params = %{email: "test@suite.com", password: "password"}
-    {:ok, user} = Users.insert(user_params)
-    [user_id: user.id]
+    {:ok, user} = Users.insert(%{email: "test@suite.com", password: "password"})
+
+    params_one = %{
+      "title" => "Test Title",
+      "description" => "Test description.",
+      "end_auction_at" => %{day: "15", hour: "14", minute: "3", month: "4", year: "3019"},
+      "starting_amount" => "10.00",
+      "seller_id" => user.id
+    }
+
+    params_two =
+      params_one
+      |> Map.put("title", "Test Title Two")
+      |> Map.put("description", "Test description two.")
+      |> Map.put("starting_amount", "15.00")
+
+    [params_one: params_one, params_two: params_two]
   end
 
-  describe "insert/2" do
-    test "stores a valid auction in the db", %{user_id: seller_id} do
-      {:ok, new_auction} = Auctions.insert(seller_id, @auction_one)
+  def assert_amount_equal(actual, expected) do
+    assert Helpers.Money.compare(actual, expected) == :eq
+  end
 
-      assert new_auction.title == @auction_one["title"]
-      assert new_auction.description == @auction_one["description"]
-      assert Money.compare(new_auction.price, Money.new(10_00)) == 0
+  describe "insert/1" do
+    test "stores a valid auction in the db", %{params_one: params} do
+      {:ok, auction} = Auctions.insert(params)
+
+      assert auction.title == params["title"]
+      assert auction.description == params["description"]
+
+      assert_amount_equal(auction.starting_amount, Money.new(10_00))
     end
 
-    test "does not store when title is blank", %{user_id: seller_id} do
-      invalid_params = %{@auction_two | "title" => ""}
-      assert {:error, _} = Auctions.insert(seller_id, invalid_params)
+    test "does not store when title is blank", %{params_two: params} do
+      invalid_params = %{params | "title" => ""}
+      assert {:error, _} = Auctions.insert(invalid_params)
     end
 
-    test "does not store when invalid seller_id" do
-      {:error, changeset} = Auctions.insert(0, @auction_two)
+    test "does not store when invalid seller_id", %{params_two: params} do
+      invalid_params = Map.put(params, "seller_id", 0)
+      {:error, changeset} = Auctions.insert(invalid_params)
 
       assert "does not exist" in errors_on(changeset).seller_id
     end
   end
 
   describe "exists?/1" do
-    test "true when auction with given id", %{user_id: seller_id} do
-      {:ok, auction} = Auctions.insert(seller_id, @auction_one)
+    test "true when auction with given id", %{params_one: params} do
+      {:ok, auction} = Auctions.insert(params)
       assert Auctions.exists?(auction.id)
     end
 
@@ -63,9 +61,9 @@ defmodule Renaissance.Test.AuctionsTest do
   end
 
   describe "open?/1" do
-    test "true when end time is in the future", %{user_id: seller_id} do
-      {:ok, auction_created} = Auctions.insert(seller_id, @auction_one)
-      assert Auctions.open?(auction_created.id)
+    test "true when end time is in the future", %{params_one: params} do
+      {:ok, auction} = Auctions.insert(params)
+      assert Auctions.open?(auction.id)
     end
 
     test "false when auction does not exist" do
@@ -73,48 +71,36 @@ defmodule Renaissance.Test.AuctionsTest do
     end
 
     @tag :sleeps
-    test "false when end time is in not the future", %{user_id: seller_id} do
-      end_time =
-        Timex.add(DateTime.utc_now(), %Timex.Duration{
-          megaseconds: 0,
-          seconds: 1,
-          microseconds: 0
-        })
+    test "false when end time is in not the future", %{params_one: params} do
+      duration = %Timex.Duration{megaseconds: 0, seconds: 1, microseconds: 0}
+      end_time = Timex.add(DateTime.utc_now(), duration)
+      closed_params = Map.put(params, "end_auction_at", end_time)
 
-      end_now_params =
-        %{@auction_one | "end_auction_at" => end_time}
-        |> Map.put("seller_id", seller_id)
-
-      {:ok, auction} = Repo.insert(Auction.changeset(%Auction{}, end_now_params))
+      {:ok, closed_auction} = Auctions.insert(closed_params)
 
       :timer.sleep(1000)
-      refute Auctions.open?(auction.id)
+      refute Auctions.open?(closed_auction.id)
     end
   end
 
   describe "update/2" do
-    test "updates a pre-existing auction description", %{user_id: seller_id} do
-      {:ok, auction} = Auctions.insert(seller_id, @auction_one)
+    @updates %{description: "Updated Description", title: "Updated Title"}
+    test "updates a pre-existing auction description", %{params_one: params} do
+      {:ok, auction} = Auctions.insert(params)
 
-      auction_id = auction.id
-      updated_description = "Updated Description"
+      Auctions.update(auction.id, %{"description" => @updates.description})
 
-      Auctions.update(auction_id, %{"description" => updated_description})
-
-      retrieved_auction = Auctions.get!(auction_id)
-      assert retrieved_auction.description == updated_description
+      actual = auction.id |> Auctions.get!() |> Map.get(:description)
+      assert actual == @updates.description
     end
 
-    test "updates a pre-existing auction title", %{user_id: seller_id} do
-      {:ok, auction} = Auctions.insert(seller_id, @auction_one)
+    test "updates a pre-existing auction title", %{params_one: params} do
+      {:ok, auction} = Auctions.insert(params)
 
-      auction_id = auction.id
-      updated_title = "Updated Title"
+      Auctions.update(auction.id, %{"title" => @updates.title})
 
-      Auctions.update(auction_id, %{"title" => updated_title})
-
-      retrieved_auction = Auctions.get!(auction_id)
-      assert retrieved_auction.title == updated_title
+      actual = auction.id |> Auctions.get!() |> Map.get(:title)
+      assert actual == @updates.title
     end
   end
 end

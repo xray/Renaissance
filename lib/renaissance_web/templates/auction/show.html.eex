@@ -1,36 +1,45 @@
-<div class="pageContent">
-  <div class="pageGroup show-auction">
-      <%= if @user.email != @auction.seller.email do %>
-        <h1 class="lbl-group"><%= @auction.title %></h1>
-        <div class="content-text show-auction">
-        <i><%= @auction.description %></i>
-      <% else %>
-        <%= form_for @changeset, Routes.auction_path(@conn, :update, @auction), [method: :put], fn f -> %>
-        <%= text_input f, :title, class: "lbl-group",
-        value: @auction.title, required: true %>
-        <%= error_tag f, :title %>
-        <div class="content-text show-auction">
-          <%= text_input f, :description, class: "txt-form",
-          value: @auction.description, required: true %>
-          <%= error_tag f, :description %>
-
-          <div class="form-section">
-          <%= submit "Update Auction" %>
-          </div>
-        <% end %>
-      <% end %>
-      <div class="centered-container">
-        <table class="item-table">
-          <tr class="table-row"><td class="table-section table-left">Price:</td><td class="bold table-section table-right"><%= @auction.price %></td></tr>
-          <tr class="table-row"><td class="table-section table-left">Seller:</td><td class="bold table-section table-right"> <%= @auction.seller.email %></td></tr>
-          <tr class="table-row">
-            <td class="table-section table-left">End Date:</td>
-            <td class="bold table-section table-right"><%= @auction.end_auction_at %></td>
-          </tr>
-        </table>
+  <div class="pageContent">
+  <div class="pageGroup">
+  <%= if @user.email != @auction.seller.email do %>
+    <h1 class="lbl-group"><%= @auction.title %></h1>
+    <h4 class="mod-txt_secondary"><%= @auction.description %></h4>
+    <%= render("_details.html", auction: @auction) %>
+    <%= form_for @changeset, Routes.bid_path(@conn, :create), fn f -> %>
+      <div class="form-section">
+        <%= hidden_input f, :auction_id, value: @auction.id%>
+        <%= label f, :amount, "Make a Bid", class: "lbl-form" %>
+        <div class="form-section-horizontal">
+          <p class="dollar-sign">$</p>
+          <%= number_input f, :amount, class: "txt-form",
+          required: true, min: float_amount(@auction.current_amount),
+          step: 0.01, value: float_amount(@auction.current_amount) + 1.00 %>
+        </div>
+        <%= error_tag f, :amount %>
       </div>
-      <%= live_render(@conn, RenaissanceWeb.AuctionsLive.Show, session: %{auction: @auction}) %>
+    <%= live_render(@conn, RenaissanceWeb.AuctionsLive.Show, session: %{auction: @auction}) %>
+    <div class="nav-container">
       <%= link "back", to: Routes.auction_path(@conn, :index), class: "button" %>
+      <div class="nav-spacer"></div>
+      <%= submit "Submit Bid" %>
     </div>
+    <% end %>
+  <% else %>
+    <%= form_for @changeset, Routes.auction_path(@conn, :update, @auction), [method: :put], fn f -> %>
+      <%= text_input f, :title, class: "edit-title auction-editable lbl-group",
+      value: @auction.title, title: "Click here to edit the auction title.",required: true %>
+      <%= error_tag f, :title %>
+
+      <%= text_input f, :description, class: "mod-txt_secondary edit-description auction-editable",
+      value: @auction.description, title: "Click here to edit the auction description.", required: true %>
+      <%= error_tag f, :description %>
+      <%= render("_details.html", auction: @auction) %>
+      <%= live_render(@conn, RenaissanceWeb.AuctionsLive.Show, session: %{auction: @auction}) %>
+      <div class="nav-container">
+        <%= link "back", to: Routes.auction_path(@conn, :index), class: "button" %>
+        <div class="nav-spacer"></div>
+        <%= submit "Update Auction" %>
+      </div>
+    <% end %>
+  <% end %>
   </div>
 </div>

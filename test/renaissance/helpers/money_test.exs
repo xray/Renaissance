@@ -38,4 +38,72 @@ defmodule Renaissance.Test.MoneyTest do
       assert Helpers.Money.money_max(@underscore.with, @underscore.none) == @underscore.with
     end
   end
+
+  describe "to_float/1" do
+    test "returns a float of 9.99 when given a money object with a value of 999" do
+      value = Money.new(999).amount
+      assert Helpers.Money.to_float(value) == 9.99
+    end
+
+    test "returns a float of 9.00 when given a money object with a value of 900" do
+      value = Money.new(900).amount
+      assert Helpers.Money.to_float(value) == 9.00
+    end
+  end
+
+  describe "to_money!/2" do
+    test "given a string of '5.0' it returns a money object with a value of 500" do
+      to_convert = %{amount: "5.0"}
+      control = Money.new(500)
+
+      result = Helpers.Money.to_money!(to_convert, :amount).amount
+
+      assert Money.compare(control, result) == 0
+    end
+
+    test "given a string of '5' it returns a money object with a value of 500" do
+      to_convert = %{amount: "5"}
+      control = Money.new(500)
+
+      result = Helpers.Money.to_money!(to_convert, :amount).amount
+
+      assert Money.compare(control, result) == 0
+    end
+
+    test "given a string of '5.00' it returns a money object with a value of 500" do
+      to_convert = %{amount: "5.00"}
+      control = Money.new(500)
+
+      result = Helpers.Money.to_money!(to_convert, :amount).amount
+
+      assert Money.compare(control, result) == 0
+    end
+
+    test "given a string of '.5' it returns a money object with a value of 50" do
+      to_convert = %{amount: ".5"}
+      control = Money.new(50)
+
+      result = Helpers.Money.to_money!(to_convert, :amount).amount
+
+      assert Money.compare(control, result) == 0
+    end
+
+    test "given a string of '.49 it returns a money object with a value of 49" do
+      to_convert = %{amount: ".49"}
+      control = Money.new(49)
+
+      result = Helpers.Money.to_money!(to_convert, :amount).amount
+
+      assert Money.compare(control, result) == 0
+    end
+
+    test "given a string of '.05' it returns a money object with a value of 49" do
+      to_convert = %{amount: ".05"}
+      control = Money.new(5)
+
+      result = Helpers.Money.to_money!(to_convert, :amount).amount
+
+      assert Money.compare(control, result) == 0
+    end
+  end
 end

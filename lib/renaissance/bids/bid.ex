@@ -1,7 +1,7 @@
 defmodule Renaissance.Bid do
   use Ecto.Schema
-  import Ecto.Changeset
-  alias Renaissance.{Auction, User}
+  import Ecto.{Changeset, Query}
+  alias Renaissance.{Auction, Bid, User}
   alias Renaissance.Helpers.Validators
 
   @required_fields ~w(auction_id bidder_id amount)a
@@ -21,10 +21,24 @@ defmodule Renaissance.Bid do
     bid
     |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
-    |> foreign_key_constraint(:bidder_id, name: :bids_bidder_id_fkey)
-    |> foreign_key_constraint(:auction_id, name: :bids_auction_id_fkey)
-    |> Validators.validate_amount(:amount)
+    |> foreign_key_constraint(:bidder_id)
+    |> foreign_key_constraint(:auction_id)
+    |> unique_constraint(:amount, name: :bids_amount_auction_id_index)
+    |> Validators.validate_bid_amount()
     |> Validators.validate_bidder(:bidder_id)
     |> Validators.validate_open(:amount)
+  end
+
+  def highest do
+    highest_bids =
+      from(b in Bid,
+        group_by: b.auction_id,
+        select: %{auction_id: b.auction_id, amount: max(b.amount)}
+      )
+
+    from(b in Bid,
+      join: b2 in subquery(highest_bids),
+      on: b.auction_id == b2.auction_id and b.amount == b2.amount
+    )
   end
 end

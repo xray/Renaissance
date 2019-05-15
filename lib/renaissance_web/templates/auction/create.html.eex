@@ -1,4 +1,4 @@
-<div class="pageContent">
+  <div class="pageContent">
   <div class="pageGroup">
     <h1 class="lbl-group">Create an Auction</h1>
 
@@ -19,13 +19,13 @@
 
     <div class="form-section form-section-horizontal">
       <div class="form-section-half half-left">
-        <%= label f, :price, "Starting Price", class: "lbl-form" %>
+        <%= label f, :starting_amount, "Starting Price", class: "lbl-form" %>
         <div class="form-section-horizontal">
           <p class="dollar-sign">$</p>
-          <%= number_input f, :price,  class: "txt-form",
+          <%= number_input f, :starting_amount,  class: "txt-form",
           required: true, min: 0.01, step: 0.01, value: 0.01 %>
         </div>
-        <%= error_tag f, :price %>
+        <%= error_tag f, :starting_amount %>
       </div>
 
 
@@ -39,9 +39,9 @@
         <%= error_tag f, :end_auction_at %>
       </div>
     </div>
-
-    <div class="form-section">
-      <%= submit "Create Auction" %>
+    <div class="nav-container">
+      <div class="nav-spacer"></div>
+      <%= submit "Create Auction"%>
     </div>
   </div>
   <% end %>
