@@ -12,7 +12,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
       title: "Test Title",
       description: "Test description.",
       end_auction_at: @valid_end,
-      price: "10.00"
+      starting_amount: "10.00"
     }
   }
 
@@ -21,7 +21,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
       title: "Test Two Title",
       description: "Test two description.",
       end_auction_at: %{@valid_end | day: @valid_end.day + 1},
-      price: "15.00"
+      starting_amount: "15.00"
     }
   }
 
@@ -42,11 +42,11 @@ defmodule RenaissanceWeb.AuctionControllerTest do
         |> get("/auctions")
 
       assert html_response(conn, 200) =~ @auction_one_params.auction.title
-      assert html_response(conn, 200) =~ "$" <> @auction_one_params.auction.price
+      assert html_response(conn, 200) =~ "$" <> @auction_one_params.auction.starting_amount
       assert html_response(conn, 200) =~ @auction_one_params.auction.description
 
       assert html_response(conn, 200) =~ @auction_two_params.auction.title
-      assert html_response(conn, 200) =~ "$" <> @auction_two_params.auction.price
+      assert html_response(conn, 200) =~ "$" <> @auction_two_params.auction.starting_amount
       assert html_response(conn, 200) =~ @auction_two_params.auction.description
 
       refute html_response(conn, 200) =~ ~s(class="countdown")
@@ -188,7 +188,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
         "title" => "Test Title",
         "description" => "Test description.",
         "end_auction_at" => @valid_end,
-        "price" => "10.00",
+        "starting_amount" => "10.00",
         "seller_id" => seller.id
       })
 
@@ -200,8 +200,38 @@ defmodule RenaissanceWeb.AuctionControllerTest do
 
       conn = get(conn, "/auctions/#{auction_id}")
 
-      assert html_response(conn, 200) =~
-               ~s(<input class="txt-form" id="amount" min="10.0" name="amount" step="0.01" type="number" value="11.0" required>)
+      assert html_response(conn, 200) =~ ~s(<button type="submit">Submit Bid</button>)
+    end
+  end
+
+  describe "show/2 when the auction has ended and does not belong to the user" do
+    @tag :sleeps
+    setup %{conn: conn} do
+      {:ok, seller} = Users.insert(%{email: "seller@seller.com", password: "password"})
+      {:ok, bidder} = Users.insert(%{email: "bidder@bidder.com", password: "password"})
+
+      duration = %Timex.Duration{megaseconds: 0, seconds: 1, microseconds: 0}
+      end_time = Timex.add(DateTime.utc_now(), duration)
+
+      Auctions.insert(%{
+        "title" => "Test Title",
+        "description" => "Test description.",
+        "end_auction_at" => end_time,
+        "starting_amount" => "10.00",
+        "seller_id" => seller.id
+      })
+
+      :timer.sleep(1000)
+
+      {:ok, conn: Test.init_test_session(conn, current_user_id: bidder.id)}
+    end
+
+    test "GET /auction/:id a form for placing a bid is not present", %{conn: conn} do
+      auction_id = Repo.get_by(Auction, title: @auction_one_params.auction.title).id
+
+      conn = get(conn, "/auctions/#{auction_id}")
+
+      refute html_response(conn, 200) =~ ~s(<button type="submit">Submit Bid</button>)
     end
   end
 end

@@ -9,7 +9,7 @@ defmodule Renaissance.Test.AuctionsTest do
       "title" => "Test Title",
       "description" => "Test description.",
       "end_auction_at" => %{day: "15", hour: "14", minute: "3", month: "4", year: "3019"},
-      "price" => "10.00",
+      "starting_amount" => "10.00",
       "seller_id" => user.id
     }
 
@@ -17,18 +17,23 @@ defmodule Renaissance.Test.AuctionsTest do
       params_one
       |> Map.put("title", "Test Title Two")
       |> Map.put("description", "Test description two.")
-      |> Map.put("price", "15.00")
+      |> Map.put("starting_amount", "15.00")
 
     [params_one: params_one, params_two: params_two]
   end
 
+  def assert_amount_equal(actual, expected) do
+    assert Helpers.Money.compare(actual, expected) == :eq
+  end
+
   describe "insert/1" do
     test "stores a valid auction in the db", %{params_one: params} do
-      {:ok, new_auction} = Auctions.insert(params)
+      {:ok, auction} = Auctions.insert(params)
 
-      assert new_auction.title == params["title"]
-      assert new_auction.description == params["description"]
-      assert Helpers.Money.compare(new_auction.price, Money.new(10_00)) == :eq
+      assert auction.title == params["title"]
+      assert auction.description == params["description"]
+
+      assert_amount_equal(auction.starting_amount, Money.new(10_00))
     end
 
     test "does not store when title is blank", %{params_two: params} do
@@ -79,26 +84,23 @@ defmodule Renaissance.Test.AuctionsTest do
   end
 
   describe "update/2" do
+    @updates %{description: "Updated Description", title: "Updated Title"}
     test "updates a pre-existing auction description", %{params_one: params} do
       {:ok, auction} = Auctions.insert(params)
 
-      updated_description = "Updated Description"
+      Auctions.update(auction.id, %{"description" => @updates.description})
 
-      Auctions.update(auction.id, %{"description" => updated_description})
-
-      retrieved_auction = Auctions.get!(auction.id)
-      assert retrieved_auction.description == updated_description
+      actual = auction.id |> Auctions.get!() |> Map.get(:description)
+      assert actual == @updates.description
     end
 
     test "updates a pre-existing auction title", %{params_one: params} do
       {:ok, auction} = Auctions.insert(params)
 
-      updated_title = "Updated Title"
+      Auctions.update(auction.id, %{"title" => @updates.title})
 
-      Auctions.update(auction.id, %{"title" => updated_title})
-
-      retrieved_auction = Auctions.get!(auction.id)
-      assert retrieved_auction.title == updated_title
+      actual = auction.id |> Auctions.get!() |> Map.get(:title)
+      assert actual == @updates.title
     end
   end
 end

@@ -1,7 +1,6 @@
 defmodule Renaissance.Bid do
   use Ecto.Schema
-  import Ecto.Changeset
-  import Ecto.Query
+  import Ecto.{Changeset, Query}
   alias Renaissance.{Auction, User}
   alias Renaissance.Helpers.Validators
 
@@ -25,7 +24,7 @@ defmodule Renaissance.Bid do
     |> foreign_key_constraint(:bidder_id)
     |> foreign_key_constraint(:auction_id)
     |> unique_constraint(:amount, name: :bids_amount_auction_id_index)
-    |> Validators.validate_amount(:amount)
+    |> Validators.validate_bid_amount()
     |> Validators.validate_bidder(:bidder_id)
     |> Validators.validate_open(:amount)
   end

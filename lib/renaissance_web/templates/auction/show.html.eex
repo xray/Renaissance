@@ -1,4 +1,4 @@
-<div class="pageContent">
+  <div class="pageContent">
   <div class="pageGroup">
   <%= if @user.email != @auction.seller.email do %>
     <h1 class="lbl-group"><%= @auction.title %></h1>
@@ -11,8 +11,8 @@
         <div class="form-section-horizontal">
           <p class="dollar-sign">$</p>
           <%= number_input f, :amount, class: "txt-form",
-          required: true, min: float_value(@auction), 
-          step: 0.01, value: float_value(@auction) + 1.00 %>
+          required: true, min: float_amount(@auction.current_amount),
+          step: 0.01, value: float_amount(@auction.current_amount) + 1.00 %>
         </div>
         <%= error_tag f, :amount %>
       </div>
@@ -43,4 +43,3 @@
   <% end %>
   </div>
 </div>
-  

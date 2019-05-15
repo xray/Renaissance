@@ -37,17 +37,6 @@ defmodule Renaissance.Bids do
     Repo.exists?(from b in Bid, where: b.id == ^id)
   end
 
-  def get_highest_bid_amount(nil), do: nil
-
-  def get_highest_bid_amount(auction_id) do
-    query =
-      from b in "bids",
-        select: type(b.amount, Money.Ecto.Type),
-        where: b.auction_id == ^auction_id
-
-    Repo.aggregate(query, :max, :amount)
-  end
-
   def get_highest_bid(nil), do: nil
 
   def get_highest_bid(auction_id) do

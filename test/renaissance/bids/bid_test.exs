@@ -12,7 +12,7 @@ defmodule Renaissance.Test.BidTest do
       "title" => "Test Title",
       "description" => "Test description.",
       "end_auction_at" => end_time,
-      "price" => "1.00",
+      "starting_amount" => "1.00",
       "seller_id" => seller.id
     }
 
@@ -33,7 +33,7 @@ defmodule Renaissance.Test.BidTest do
 
     refute changeset.valid?
 
-    message = ~s(must be greater than $#{params.auction["price"]})
+    message = ~s(must be greater than $#{params.auction["starting_amount"]})
     assert message in errors_on(changeset).amount
   end
 
@@ -43,7 +43,7 @@ defmodule Renaissance.Test.BidTest do
 
     refute changeset.valid?
 
-    message = ~s(must be greater than $#{params.auction["price"]})
+    message = ~s(must be greater than $#{params.auction["starting_amount"]})
     assert message in errors_on(changeset).amount
   end
 
@@ -68,7 +68,7 @@ defmodule Renaissance.Test.BidTest do
     changeset = Bid.changeset(%Bid{}, invalid_params)
 
     refute changeset.valid?
-    assert "can't bid on the item you're selling" in errors_on(changeset).bidder_id
+    assert "can't bid on an item you're selling" in errors_on(changeset).bidder_id
   end
 
   @tag :sleeps

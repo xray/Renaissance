@@ -11,7 +11,7 @@ defmodule RenaissanceWeb.BidControllerTest do
     "title" => "Test Title",
     "description" => "Test description.",
     "end_auction_at" => %{day: 15, hour: 14, minute: 3, month: 4, year: 3019},
-    "price" => "10.00"
+    "starting_amount" => "10.00"
   }
 
   def fixture(:auction) do
