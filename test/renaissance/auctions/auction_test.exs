@@ -11,7 +11,7 @@ defmodule Renaissance.Test.AuctionTest do
       title: "Test title",
       description: "Test description",
       seller_id: 1,
-      price: 100,
+      starting_amount: 100,
       end_auction_at: datetime
     }
   end
@@ -47,19 +47,19 @@ defmodule Renaissance.Test.AuctionTest do
     end
 
     test "requires price" do
-      invalid_params = %{fixture(:valid_params) | price: nil}
+      invalid_params = %{fixture(:valid_params) | starting_amount: nil}
       changeset = Auction.changeset(%Auction{}, invalid_params)
 
       refute changeset.valid?
-      assert "can't be blank" in errors_on(changeset).price
+      assert "can't be blank" in errors_on(changeset).starting_amount
     end
 
     test "requires price to be greater than 0" do
-      invalid_params = %{fixture(:valid_params) | price: 0}
+      invalid_params = %{fixture(:valid_params) | starting_amount: 0}
       changeset = Auction.changeset(%Auction{}, invalid_params)
 
       refute changeset.valid?
-      assert "must be greater than $0.00" in errors_on(changeset).price
+      assert "must be greater than $0.00" in errors_on(changeset).starting_amount
     end
 
     test "requires end date" do

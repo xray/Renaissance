@@ -12,7 +12,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
       title: "Test Title",
       description: "Test description.",
       end_auction_at: @valid_end,
-      price: "10.00"
+      starting_amount: "10.00"
     }
   }
 
@@ -21,7 +21,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
       title: "Test Two Title",
       description: "Test two description.",
       end_auction_at: %{@valid_end | day: @valid_end.day + 1},
-      price: "15.00"
+      starting_amount: "15.00"
     }
   }
 
@@ -42,11 +42,11 @@ defmodule RenaissanceWeb.AuctionControllerTest do
         |> get("/auctions")
 
       assert html_response(conn, 200) =~ @auction_one_params.auction.title
-      assert html_response(conn, 200) =~ "$" <> @auction_one_params.auction.price
+      assert html_response(conn, 200) =~ "$" <> @auction_one_params.auction.starting_amount
       assert html_response(conn, 200) =~ @auction_one_params.auction.description
 
       assert html_response(conn, 200) =~ @auction_two_params.auction.title
-      assert html_response(conn, 200) =~ "$" <> @auction_two_params.auction.price
+      assert html_response(conn, 200) =~ "$" <> @auction_two_params.auction.starting_amount
       assert html_response(conn, 200) =~ @auction_two_params.auction.description
 
       refute html_response(conn, 200) =~ ~s(class="countdown")
@@ -185,7 +185,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
         "title" => "Test Title",
         "description" => "Test description.",
         "end_auction_at" => @valid_end,
-        "price" => "10.00",
+        "starting_amount" => "10.00",
         "seller_id" => seller.id
       })
 
@@ -214,7 +214,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
         "title" => "Test Title",
         "description" => "Test description.",
         "end_auction_at" => end_time,
-        "price" => "10.00",
+        "starting_amount" => "10.00",
         "seller_id" => seller.id
       })
 
