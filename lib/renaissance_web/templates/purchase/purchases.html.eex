@@ -1,0 +1,9 @@
+<div class="pageContent">
+  <div class="pageGroup">
+    <h1 class="lbl-group">Purchases</h1>
+    <div class="content-text">
+      <%= link("View all Auctions", to: Routes.auction_path(@conn, :index)) %>
+    </div>
+    <%= render_many @auctions, RenaissanceWeb.AuctionView, "_auction.html", conn: @conn %>
+  </div>
+</div>

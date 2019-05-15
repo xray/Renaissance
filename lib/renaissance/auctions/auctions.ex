@@ -41,6 +41,23 @@ defmodule Renaissance.Auctions do
     |> Repo.all()
   end
 
+  def get_won_auctions(user_id) do
+    get_all_detailed()
+    |> Enum.filter(fn auction -> 
+      case auction.highest_bid do
+        nil -> false
+        _ -> auction.highest_bid.bidder_id == user_id && !open?(auction.id)
+      end
+    end)
+  end
+
+  def get_open_auctions() do
+    get_all_detailed()
+    |> Enum.filter(fn auction -> 
+      open?(auction.id)
+    end)
+  end
+
   def open?(id) do
     case Repo.get(Auction, id) do
       nil -> false

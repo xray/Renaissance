@@ -4,6 +4,11 @@
     <div class="content-text">
       <%= link("Start an Auction", to: Routes.auction_path(@conn, :new)) %>
     </div>
+    <%= if Enum.count(Auctions.get_won_auctions(RenaissanceWeb.Helpers.Auth.current_user(@conn).id)) > 0 do %>
+      <div class="content-text">
+        <%= link("View Purchases", to: Routes.purchase_path(@conn, :index)) %>
+      </div>
+    <% end %>
     <%= render_many @auctions, RenaissanceWeb.AuctionView, "_auction.html", conn: @conn %>
   </div>
 </div>
