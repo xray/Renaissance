@@ -1,6 +1,6 @@
 defmodule RenaissanceWeb.AuctionView do
   use RenaissanceWeb, :view
-  alias Renaissance.Helpers
+  alias Renaissance.{Helpers, Auctions}
 
   def default_end do
     current = DateTime.utc_now()
@@ -12,6 +12,10 @@ defmodule RenaissanceWeb.AuctionView do
       month: current.month,
       year: current.year
     }
+  end
+
+  def auction_open?(auction) do
+    Auctions.open?(auction.id)
   end
 
   def display_value(auction) do

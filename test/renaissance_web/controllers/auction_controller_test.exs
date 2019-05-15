@@ -128,11 +128,10 @@ defmodule RenaissanceWeb.AuctionControllerTest do
       end
     end
 
-    test "GET /auctions/:id when the user is the seller the description is editable", %{
-      conn: conn
-    } do
-      conn = conn |> post("/auctions", @auction_one_params)
+    test "GET /auctions/:id description is editable when viewed by the seller", %{conn: conn} do
+      conn = post(conn, "/auctions", @auction_one_params)
       auction_one_id = Repo.get_by(Auction, title: @auction_one_params.auction.title).id
+
       conn = get(conn, "/auctions/#{auction_one_id}")
 
       assert html_response(conn, 200) =~
@@ -171,9 +170,7 @@ defmodule RenaissanceWeb.AuctionControllerTest do
 
       updated_title = "Updated " <> @auction_one_params.auction.title
 
-      conn =
-        conn
-        |> put("/auctions/#{auction_id}", %{title: updated_title})
+      conn = put(conn, "/auctions/#{auction_id}", %{title: updated_title})
 
       assert get_flash(conn, :info) == "Auction Updated!"
     end
@@ -200,8 +197,38 @@ defmodule RenaissanceWeb.AuctionControllerTest do
 
       conn = get(conn, "/auctions/#{auction_id}")
 
-      assert html_response(conn, 200) =~
-               ~s(<input class="txt-form" id="amount" min="10.0" name="amount" step="0.01" type="number" value="11.0" required>)
+      assert html_response(conn, 200) =~ ~s(<button type="submit">Submit Bid</button>)
+    end
+  end
+
+  describe "show/2 when the auction has ended and does not belong to the user" do
+    @tag :sleeps
+    setup %{conn: conn} do
+      {:ok, seller} = Users.insert(%{email: "seller@seller.com", password: "password"})
+      {:ok, bidder} = Users.insert(%{email: "bidder@bidder.com", password: "password"})
+
+      duration = %Timex.Duration{megaseconds: 0, seconds: 1, microseconds: 0}
+      end_time = Timex.add(DateTime.utc_now(), duration)
+
+      Auctions.insert(%{
+        "title" => "Test Title",
+        "description" => "Test description.",
+        "end_auction_at" => end_time,
+        "price" => "10.00",
+        "seller_id" => seller.id
+      })
+
+      :timer.sleep(1000)
+
+      {:ok, conn: Test.init_test_session(conn, current_user_id: bidder.id)}
+    end
+
+    test "GET /auction/:id a form for placing a bid is not present", %{conn: conn} do
+      auction_id = Repo.get_by(Auction, title: @auction_one_params.auction.title).id
+
+      conn = get(conn, "/auctions/#{auction_id}")
+
+      refute html_response(conn, 200) =~ ~s(<button type="submit">Submit Bid</button>)
     end
   end
 end
